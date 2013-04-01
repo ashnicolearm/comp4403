@@ -1,0 +1,7 @@
+var
+  x: int;
+  b : boolean;
+begin
+  x := 1 | x := 2;
+  x := b | b := x
+end

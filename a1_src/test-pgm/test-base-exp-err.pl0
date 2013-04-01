@@ -1,0 +1,21 @@
+type S = 2..8;
+var i: int;
+    b: boolean;
+    j: S;
+const k = 10;
+begin
+  i := true;
+  b := 8;
+  i := b;
+  i := i + b;
+  b := i + b;
+  j := i;
+  i := j;
+  i := i + j;
+  b := j;
+  j := b;
+  j := i = j;
+  b := x * y;
+  i := i + (j * x);
+  write undefined
+end

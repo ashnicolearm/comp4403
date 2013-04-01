@@ -1,0 +1,15 @@
+type S = 2..7;
+var x: S;
+    y: int;
+begin
+  y := 9;
+  write y;
+  x := 2;
+  write x;
+  x := 7;
+  write x;
+  x := 1;
+  write x;
+  x := 8;
+  write x
+end

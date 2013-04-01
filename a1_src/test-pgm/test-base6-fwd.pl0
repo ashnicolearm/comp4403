@@ -1,0 +1,31 @@
+var 
+  x: A;
+type 
+  A = B;
+  B = C;
+  C = int;
+  D = E;
+  E = F;
+  F = D;
+var
+  z: D;
+procedure p() = 
+  var 
+    q: B;
+    y: D;
+  type
+    B = C;
+    C = boolean;
+    D = A;
+  begin
+    q := true;
+    q := 1;
+    y := 1;
+    y := true;
+    x := 1;
+    x := true
+  end;
+begin
+  x := 1;
+  x := true
+end

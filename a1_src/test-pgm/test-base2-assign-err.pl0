@@ -1,0 +1,17 @@
+const
+	c = true;
+var 
+	x: int;
+    b: boolean;
+begin
+	x := 1;
+	b := true;
+	x := true;
+	b := 1;
+	c := false;
+	b := c;
+	if c then
+		write 1
+	else
+		write 0
+end
