@@ -28,4 +28,8 @@ public interface  StatementTransform<ResultType> {
     ResultType visitWhileNode( StatementNode.WhileNode node);
 
 	ResultType visitSkipNode( StatementNode.SkipNode node);
+
+	ResultType visitDoBranchNode( StatementNode.DoBranchNode doBranchNode);
+
+	ResultType visitDoStatementNode( StatementNode.DoStatementNode doStatementNode);
 }

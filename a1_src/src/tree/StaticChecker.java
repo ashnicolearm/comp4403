@@ -13,6 +13,7 @@ import syms.SymEntry;
 import syms.SymbolTable;
 import syms.Type;
 import tree.Coercion.IncompatibleTypes;
+import tree.StatementNode.DoStatementNode;
 import tree.Tree.*;
 
 /** class StaticSemantics - Performs the static semantic checks on
@@ -301,6 +302,14 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         newNode = newNode.transform( this );
         return newNode;
     }
+	public void visitDoBranchNode( StatementNode.DoBranchNode node) {
+		// TODO
+		return;
+	}
+	public void visitDoStatementNode(DoStatementNode doStatementNode) {
+		// TODO Auto-generated method stub
+		return;
+	}
 
     public ExpNode visitVariableNode(ExpNode.VariableNode node) {
         // Set the type of the node.

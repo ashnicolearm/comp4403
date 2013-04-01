@@ -10,6 +10,8 @@ import source.Position;
 import source.Severity;
 import syms.SymEntry;
 import syms.Type;
+import tree.StatementNode.DoBranchNode;
+import tree.StatementNode.DoStatementNode;
 import tree.Tree.*;
 
 /** class CodeGenerator implements code generation using the
@@ -141,6 +143,17 @@ public class CodeGenerator
         
         return code;
     }
+    
+    /** Code generation for do branch node. */
+	public Code visitDoBranchNode(StatementNode.DoBranchNode doBranchNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Code visitDoStatementNode(DoStatementNode doStatementNode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     /** Code generation for a single assignment statement. */
 	public Code visitSingleAssignmentNode( StatementNode.SingleAssignmentNode node) {
@@ -388,5 +401,7 @@ public class CodeGenerator
 		code.generateOp( Operation.NO_OP );
 		return code;
     }
+
+
 
 }

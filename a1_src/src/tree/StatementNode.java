@@ -168,16 +168,71 @@ public abstract class StatementNode {
             return s + ")";
         }
     }
+    /** Tree node representing a do branch. */
+    public static class DoBranchNode extends StatementNode {
+    	private ExpNode condition;
+    	private StatementNode body;
+    	private boolean isExitBranch;
+    	
+    	public DoBranchNode ( Position pos, ExpNode condition, StatementNode body, 
+    			boolean isExitBranch ) {
+        	super ( pos );
+        	this.condition = condition;
+        	this.body = body;
+    	}
+        public void accept( StatementVisitor visitor ) {
+            visitor.visitDoBranchNode( this );
+        }
+        public Code genCode( StatementTransform<Code> visitor ) {
+            return visitor.visitDoBranchNode( this );
+        }
+        public ExpNode getCondition() {
+        	return condition;
+        }
+        public StatementNode getBody() {
+        	return body;
+        }
+		public void setExitBranch(boolean exitBranch) {
+			this.isExitBranch = exitBranch;
+		}
+		public boolean getIsExitBranch() {
+			return this.isExitBranch;
+		}
+    }
+    /** Tree node representing a do statement. */
+    public static class DoStatementNode extends StatementNode {
+        private List<StatementNode.DoBranchNode> branches;
+    	
+        public DoStatementNode( Position pos ) {
+        	super ( pos );
+        	this.branches = new ArrayList<StatementNode.DoBranchNode>();
+        }
+        public void addDoBranch( StatementNode.DoBranchNode b ) {
+        	branches.add(b);
+        }
+        public void accept( StatementVisitor visitor ) {
+            visitor.visitDoStatementNode( this );
+        }
+        public Code genCode( StatementTransform<Code> visitor ) {
+            return visitor.visitDoStatementNode( this );
+        }
+        public List<StatementNode.DoBranchNode> getBranches() {
+        	return branches;
+        }
+        public String toString() {
+        	return "DoStatement";
+        }
+    }
     /** Tree node representing a multiple assignment. */
     public static class AssignmentNode extends StatementNode {
-        private List<SingleAssignmentNode> assignments;
+        private List<StatementNode.SingleAssignmentNode> assignments;
         
         public AssignmentNode( Position pos ) {
         	super ( pos );
-        	this.assignments = new ArrayList<SingleAssignmentNode>();
+        	this.assignments = new ArrayList<StatementNode.SingleAssignmentNode>();
         }
         
-        public void addSingleAssign( SingleAssignmentNode s ) {
+        public void addSingleAssign( StatementNode.SingleAssignmentNode s ) {
         	assignments.add(s);
         }
         
@@ -188,14 +243,14 @@ public abstract class StatementNode {
             return visitor.visitAssignmentNode( this );
         }
         
-        public List<SingleAssignmentNode> getAssignments() {
+        public List<StatementNode.SingleAssignmentNode> getAssignments() {
         	return assignments;
         }
         
         public String toString() {
             String result = "";
             String sep = "";
-            for( SingleAssignmentNode s : assignments ) {
+            for( StatementNode s : assignments ) {
                 result += sep + s.toString();
                 sep = " | ";
             }

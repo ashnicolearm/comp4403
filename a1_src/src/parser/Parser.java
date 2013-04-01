@@ -75,11 +75,14 @@ public class Parser {
     /** Set of tokens that may start an LValue. */
     private final static TokenSet LVALUE_START_SET =
         new TokenSet( Token.IDENTIFIER );
+    /** Set of tokens that may start an Assignment. */
+    private final static TokenSet ASSIGNMENT_START_SET =
+    	LVALUE_START_SET;
     /** Set of tokens that may start a Statement. */
     private final static TokenSet STATEMENT_START_SET =
         LVALUE_START_SET.union( Token.KW_WHILE, Token.KW_IF,
           Token.KW_READ, Token.KW_WRITE,
-          Token.KW_CALL, Token.KW_BEGIN, Token.KW_SKIP );
+          Token.KW_CALL, Token.KW_BEGIN, Token.KW_SKIP, Token.KW_DO );
     /** Set of tokens that may start a Declaration. */
     private final static TokenSet DECLARATION_START_SET =
         new TokenSet( Token.KW_CONST, Token.KW_TYPE, Token.KW_VAR, 
@@ -667,13 +670,51 @@ public class Parser {
     }
     /** Rule: DoStatement -> KW_DO DoBranch { SEPERATOR DoBranch } KW_OD */
     private StatementNode parseDoStatement(TokenSet recoverSet) {
-    	/*
-        beginRule( "Do Statement", Token.KW_DO ); // cannot fail
+        beginRule( "Do Statement", Token.KW_DO); // cannot fail
         Position pos = token.getPosn();
+        StatementNode.DoStatementNode result = 
+                new StatementNode.DoStatementNode( token.getPosn() );
+        
         match( Token.KW_DO );
-        */
+        
+        StatementNode doBranch = parseDoBranch( recoverSet.union( Token.SEPARATOR ).union( Token.KW_OD ) );
+        result.addDoBranch( (StatementNode.DoBranchNode) doBranch );
+        
+        while( token.isMatch( Token.SEPARATOR ) ) {
+            match( Token.SEPARATOR );
+            doBranch = parseDoBranch( recoverSet.union( Token.SEPARATOR ).union( Token.KW_OD) );
+            result.addDoBranch( (StatementNode.DoBranchNode) doBranch );
+        }
+        
+        match( Token.KW_OD );
+        
+        endRule( "Do Statement", recoverSet );
 		return null;
 	}
+    /** Rule: DoBranch -> Condition KW_THEN StatementList [ KW_EXIT ] */ 
+    private StatementNode parseDoBranch(TokenSet recoverSet) {
+        if( !beginRule( "Do Branch", CONDITION_START_SET,
+                recoverSet.union( Token.SEPARATOR ) ) ) {
+        	return new StatementNode.ErrorNode( token.getPosn() );
+        }
+        
+        Position pos = token.getPosn();
+        Boolean isExit = false;
+        
+        ExpNode condition = parseCondition( recoverSet.union( Token.KW_THEN ) );
+        match (Token.KW_THEN, STATEMENT_START_SET);
+        
+        StatementNode body = parseStatementList( recoverSet.union( Token.KW_EXIT ) );
+        if ( token.isMatch( Token.KW_EXIT ) ) {
+        	isExit = true;
+        	match (Token.KW_EXIT);
+        }
+        
+        StatementNode.DoBranchNode result = 
+        		new StatementNode.DoBranchNode(pos, condition, body, isExit);
+        
+    	return result;
+    }
 	/** Rule: SkipStatement -> KW_SKIP */
     private StatementNode parseSkipStatement( TokenSet recoverSet ) {
         beginRule( "Skip Statement", Token.KW_SKIP ); // cannot fail
@@ -683,30 +724,31 @@ public class Parser {
 		return new StatementNode.SkipNode( pos );
 	}
 	/** Rule: Assignment -> SingleAssignment { BAR SingleAssignment } */
-    private StatementNode.AssignmentNode parseAssignment( TokenSet recoverSet ) {
+    private StatementNode parseAssignment( TokenSet recoverSet ) {
         // Initialize result to an empty list of assignments
-        StatementNode.AssignmentNode result = 
-                new StatementNode.AssignmentNode( token.getPosn() );
-        if( !beginRule( "Assignment List", LVALUE_START_SET,
+        if( !beginRule( "Assignment List", ASSIGNMENT_START_SET,
                 recoverSet.union( Token.BAR ) ) ) {
-            return result;
+        	return new StatementNode.ErrorNode( token.getPosn() );
         }
         
-        StatementNode.SingleAssignmentNode s = 
+        StatementNode.AssignmentNode result = 
+                new StatementNode.AssignmentNode( token.getPosn() );
+        
+        StatementNode s = 
             parseSingleAssignment( recoverSet.union( Token.BAR ) );
-        result.addSingleAssign( s );
+        result.addSingleAssign( (StatementNode.SingleAssignmentNode) s );
         
         while( token.isMatch( Token.BAR ) ) {
             match( Token.BAR );
             s = parseSingleAssignment( recoverSet.union( Token.BAR ) );
-            result.addSingleAssign( s );
+            result.addSingleAssign( (StatementNode.SingleAssignmentNode) s );
         }
         endRule( "Assignment List", recoverSet );
         return result;
     }
     
 	/** Rule: SingleAssignment -> LValue ASSIGN Condition */
-    private StatementNode.SingleAssignmentNode parseSingleAssignment( TokenSet recoverSet ) {
+    private StatementNode parseSingleAssignment( TokenSet recoverSet ) {
         beginRule( "Single Assignment", LVALUE_START_SET ); // cannot fail
         ExpNode left = parseLValue( 
             recoverSet.union( Token.ASSIGN ).union(CONDITION_START_SET) );
