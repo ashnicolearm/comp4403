@@ -13,7 +13,7 @@ import syms.SymEntry;
 import syms.SymbolTable;
 import syms.Type;
 import tree.Coercion.IncompatibleTypes;
-import tree.StatementNode.DoStatementNode;
+import tree.StatementNode.DoBranchNode;
 import tree.Tree.*;
 
 /** class StaticSemantics - Performs the static semantic checks on
@@ -82,11 +82,11 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     	List<String> LValues = new ArrayList<String>();
     	
     	for ( StatementNode.SingleAssignmentNode s: node.getAssignments() ) {
-    		// coerce first to make sure right type
+    		// Check assignments
     		s.accept( this );
     		
     		// Make sure no duplicate variables in case of multiple assignment
-    		if ( !(LValues.contains( s.getVariableName())) ) {
+    		if ( !(LValues.contains( s.getVariableName() )) ) {
 	    		LValues.add(s.getVariableName());
     		} else {
     			error("Must have distinct variables when doing assignment", 
@@ -303,12 +303,16 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         return newNode;
     }
 	public void visitDoBranchNode( StatementNode.DoBranchNode node) {
-		// TODO
+        // Check the condition.
+        node.setCondition( checkCondition( node.getCondition() ) );
+        
+        // Check the body of the branch
+        node.getBody().accept( this );
 		return;
 	}
-	public void visitDoStatementNode(DoStatementNode doStatementNode) {
-		// TODO Auto-generated method stub
-		return;
+	public void visitDoStatementNode( StatementNode.DoStatementNode node) {
+		// Nothing to do.
+		// If each branch is well formed then the statement is well formed
 	}
 
     public ExpNode visitVariableNode(ExpNode.VariableNode node) {

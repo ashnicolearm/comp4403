@@ -726,7 +726,7 @@ public class Parser {
 	/** Rule: Assignment -> SingleAssignment { BAR SingleAssignment } */
     private StatementNode parseAssignment( TokenSet recoverSet ) {
         // Initialize result to an empty list of assignments
-        if( !beginRule( "Assignment List", ASSIGNMENT_START_SET,
+        if( !beginRule( "Assignment", ASSIGNMENT_START_SET,
                 recoverSet.union( Token.BAR ) ) ) {
         	return new StatementNode.ErrorNode( token.getPosn() );
         }
@@ -743,7 +743,7 @@ public class Parser {
             s = parseSingleAssignment( recoverSet.union( Token.BAR ) );
             result.addSingleAssign( (StatementNode.SingleAssignmentNode) s );
         }
-        endRule( "Assignment List", recoverSet );
+        endRule( "Assignment", recoverSet );
         return result;
     }
     

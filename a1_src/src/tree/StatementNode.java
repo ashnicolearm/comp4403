@@ -179,6 +179,7 @@ public abstract class StatementNode {
         	super ( pos );
         	this.condition = condition;
         	this.body = body;
+        	this.isExitBranch = isExitBranch;
     	}
         public void accept( StatementVisitor visitor ) {
             visitor.visitDoBranchNode( this );
@@ -189,12 +190,12 @@ public abstract class StatementNode {
         public ExpNode getCondition() {
         	return condition;
         }
+		public void setCondition( ExpNode condition ) {
+			this.condition = condition;
+		}
         public StatementNode getBody() {
         	return body;
         }
-		public void setExitBranch(boolean exitBranch) {
-			this.isExitBranch = exitBranch;
-		}
 		public boolean getIsExitBranch() {
 			return this.isExitBranch;
 		}

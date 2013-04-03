@@ -10,8 +10,6 @@ import source.Position;
 import source.Severity;
 import syms.SymEntry;
 import syms.Type;
-import tree.StatementNode.DoBranchNode;
-import tree.StatementNode.DoStatementNode;
 import tree.Tree.*;
 
 /** class CodeGenerator implements code generation using the
@@ -124,19 +122,13 @@ public class CodeGenerator
         Code code = new Code();
         List<StatementNode.SingleAssignmentNode> assignments = node.getAssignments();
         
-        /* reverse order
-        for( int i = assignments.size()-1; 0 <= i; i-- ) {
-	        code.append( assignments[i].getExp().genCode( this ) );
-        }
-        */
-        
-        // Append values
+        // Load expressions
         for (StatementNode.SingleAssignmentNode s : assignments) {
         	code.append( s.getVariable().genCode( this ) );
 	        code.append( s.getExp().genCode( this ) );
         }
         
-        // Store
+        // Assignments
         for (int i = 0; i < assignments.size(); i++) {
 	        code.generateOp( Operation.STORE_FRAME );
         }
@@ -150,7 +142,7 @@ public class CodeGenerator
 		return null;
 	}
 	
-	public Code visitDoStatementNode(DoStatementNode doStatementNode) {
+	public Code visitDoStatementNode(StatementNode.DoStatementNode doStatementNode) {
 		// TODO Auto-generated method stub
 		return null;
 	}
