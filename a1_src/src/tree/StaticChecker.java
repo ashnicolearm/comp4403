@@ -306,13 +306,15 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         // Check the condition.
         node.setCondition( checkCondition( node.getCondition() ) );
         
-        // Check the body of the branch
-        node.getBody().accept( this );
+        // Check (body) statements
+        node.getStatements().accept( this );
 		return;
 	}
 	public void visitDoStatementNode( StatementNode.DoStatementNode node) {
-		// Nothing to do.
-		// If each branch is well formed then the statement is well formed
+		for ( StatementNode s : node.getBranches() ) {
+			s.accept( this );
+		}
+		return;
 	}
 
     public ExpNode visitVariableNode(ExpNode.VariableNode node) {

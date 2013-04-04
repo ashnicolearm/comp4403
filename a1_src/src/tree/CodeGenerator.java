@@ -1,6 +1,9 @@
 package tree;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+
+import javax.xml.soap.Node;
 
 import machine.Operation;
 import machine.StackMachine;
@@ -137,14 +140,64 @@ public class CodeGenerator
     }
     
     /** Code generation for do branch node. */
-	public Code visitDoBranchNode(StatementNode.DoBranchNode doBranchNode) {
-		// TODO Auto-generated method stub
-		return null;
+	public Code visitDoBranchNode(StatementNode.DoBranchNode node) {
+		Code code = new Code();
+		
+        /* Generate code to evaluate the condition and then and else parts */
+        Code condition = node.getCondition().genCode( this );
+        Code statements = node.getStatements().genCode( this );
+        
+        /* Append condition */
+        code.append( condition );
+        
+        /* Append a branch over then part to condition code */
+        code.genJumpIfFalse( statements.size() + Code.SIZE_JUMP_ALWAYS );
+        
+        /* Next append the code for the then part */
+        code.append( statements );
+        
+		return code;
 	}
 	
-	public Code visitDoStatementNode(StatementNode.DoStatementNode doStatementNode) {
-		// TODO Auto-generated method stub
-		return null;
+	public Code visitDoStatementNode(StatementNode.DoStatementNode node) {
+        Code code = new Code();
+        List<StatementNode> doBranches = node.getBranches();
+        List<Code> branchCodes = new ArrayList<Code>();
+        
+        // Error code
+        Code error = new Code();
+        error.genLoadConstant( 3 );
+        error.generateOp( Operation.STOP );
+        
+        // Add branch codes
+        for( StatementNode d : doBranches ) {
+            branchCodes.add( d.genCode( this ) );
+        }
+        
+        int branch = 0;
+        for( StatementNode d : doBranches ) {
+        	// Append branch
+        	code.append(branchCodes.get(branch));
+        	boolean isExitBranch = ((StatementNode.DoBranchNode) d).getIsExitBranch();
+        	
+        	if (isExitBranch) { // Check exit
+        		// Calculate offsets
+        		int offset = 0;
+        		
+        		for ( int i = branch + 1; i < doBranches.size(); i++ ) {
+        			offset += branchCodes.get(i).size() + Code.SIZE_JUMP_ALWAYS;
+        		}
+        		offset += error.size();
+        		code.genJumpAlways( offset );
+        	} else {
+        		code.genJumpAlways( -(code.size() + Code.SIZE_JUMP_ALWAYS) );
+        	}
+        	
+        	branch++;
+        }
+        
+        code.append(error);
+		return code;
 	}
     
     /** Code generation for a single assignment statement. */
@@ -179,6 +232,8 @@ public class CodeGenerator
     public Code visitStatementListNode( StatementNode.ListNode node ) {
         Code code = new Code();
         for( StatementNode s : node.getStatements() ) {
+        	// DEBUG
+        	System.out.println("Current statement: " + s.toString());
             code.append( s.genCode( this ) );
         }
         return code;

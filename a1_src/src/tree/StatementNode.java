@@ -171,15 +171,15 @@ public abstract class StatementNode {
     /** Tree node representing a do branch. */
     public static class DoBranchNode extends StatementNode {
     	private ExpNode condition;
-    	private StatementNode body;
+    	private StatementNode statements;
     	private boolean isExitBranch;
     	
-    	public DoBranchNode ( Position pos, ExpNode condition, StatementNode body, 
+    	public DoBranchNode ( Position pos, ExpNode condition, StatementNode statements, 
     			boolean isExitBranch ) {
         	super ( pos );
         	this.condition = condition;
-        	this.body = body;
         	this.isExitBranch = isExitBranch;
+        	this.statements = statements;
     	}
         public void accept( StatementVisitor visitor ) {
             visitor.visitDoBranchNode( this );
@@ -193,8 +193,11 @@ public abstract class StatementNode {
 		public void setCondition( ExpNode condition ) {
 			this.condition = condition;
 		}
-        public StatementNode getBody() {
-        	return body;
+		public void setStatement( StatementNode s ) {
+			this.statements = s;
+		}
+        public StatementNode getStatements() {
+        	return statements;
         }
 		public boolean getIsExitBranch() {
 			return this.isExitBranch;
@@ -202,13 +205,13 @@ public abstract class StatementNode {
     }
     /** Tree node representing a do statement. */
     public static class DoStatementNode extends StatementNode {
-        private List<StatementNode.DoBranchNode> branches;
+        private List<StatementNode> branches;
     	
         public DoStatementNode( Position pos ) {
         	super ( pos );
-        	this.branches = new ArrayList<StatementNode.DoBranchNode>();
+        	this.branches = new ArrayList<StatementNode>();
         }
-        public void addDoBranch( StatementNode.DoBranchNode b ) {
+        public void addDoBranch( StatementNode b ) {
         	branches.add(b);
         }
         public void accept( StatementVisitor visitor ) {
@@ -217,7 +220,7 @@ public abstract class StatementNode {
         public Code genCode( StatementTransform<Code> visitor ) {
             return visitor.visitDoStatementNode( this );
         }
-        public List<StatementNode.DoBranchNode> getBranches() {
+        public List<StatementNode> getBranches() {
         	return branches;
         }
         public String toString() {

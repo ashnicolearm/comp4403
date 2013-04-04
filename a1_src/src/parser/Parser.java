@@ -671,25 +671,25 @@ public class Parser {
     /** Rule: DoStatement -> KW_DO DoBranch { SEPERATOR DoBranch } KW_OD */
     private StatementNode parseDoStatement(TokenSet recoverSet) {
         beginRule( "Do Statement", Token.KW_DO); // cannot fail
-        Position pos = token.getPosn();
+        
         StatementNode.DoStatementNode result = 
                 new StatementNode.DoStatementNode( token.getPosn() );
         
         match( Token.KW_DO );
         
         StatementNode doBranch = parseDoBranch( recoverSet.union( Token.SEPARATOR ).union( Token.KW_OD ) );
-        result.addDoBranch( (StatementNode.DoBranchNode) doBranch );
+        result.addDoBranch( doBranch );
         
         while( token.isMatch( Token.SEPARATOR ) ) {
             match( Token.SEPARATOR );
             doBranch = parseDoBranch( recoverSet.union( Token.SEPARATOR ).union( Token.KW_OD) );
-            result.addDoBranch( (StatementNode.DoBranchNode) doBranch );
+            result.addDoBranch( doBranch );
         }
         
-        match( Token.KW_OD );
+        match( Token.KW_OD, recoverSet );
         
         endRule( "Do Statement", recoverSet );
-		return null;
+		return result;
 	}
     /** Rule: DoBranch -> Condition KW_THEN StatementList [ KW_EXIT ] */ 
     private StatementNode parseDoBranch(TokenSet recoverSet) {
@@ -704,15 +704,17 @@ public class Parser {
         ExpNode condition = parseCondition( recoverSet.union( Token.KW_THEN ) );
         match (Token.KW_THEN, STATEMENT_START_SET);
         
-        StatementNode body = parseStatementList( recoverSet.union( Token.KW_EXIT ) );
+        StatementNode statements = parseStatementList( recoverSet.union( Token.KW_EXIT ) );
+        
         if ( token.isMatch( Token.KW_EXIT ) ) {
         	isExit = true;
         	match (Token.KW_EXIT);
         }
         
-        StatementNode.DoBranchNode result = 
-        		new StatementNode.DoBranchNode(pos, condition, body, isExit);
+        StatementNode result = 
+        		new StatementNode.DoBranchNode(pos, condition, statements, isExit);
         
+        endRule( "Do Branch", recoverSet );
     	return result;
     }
 	/** Rule: SkipStatement -> KW_SKIP */
