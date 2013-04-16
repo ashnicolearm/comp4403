@@ -1,0 +1,22 @@
+// invalid program
+// P defined circularly in terms of Q, R, S, and P!
+// X is undefined
+type 
+  P = Q;
+  Q = R;
+  R = record
+        x: int;
+        y: S
+      end;
+  S = P;
+  A = ^X;
+var
+  z: R;
+  v: A;
+  x: int;
+begin
+  write v^;
+  z.x := 1;
+  z.y := z;
+  write x^
+end

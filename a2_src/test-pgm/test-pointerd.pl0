@@ -1,0 +1,24 @@
+//Valid assignment,
+//error cannot coerce ref(empty) to int,
+//invalid assignment
+type
+    empty = record
+            end;
+    RT = record
+          x: int;
+          y: empty;
+          z: int
+         end;
+    CQ = record
+          x: int;
+          z: int
+         end;
+var
+    r: RT;
+    q: CQ;
+    e: empty;
+begin
+  r.y := e;
+  write r.y;
+  r := q
+end
