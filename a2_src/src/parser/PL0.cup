@@ -167,6 +167,8 @@ non terminal                  ConstDefSeq, ConstDef;
 non terminal ConstExp         Constant;
 non terminal                  TypeDefSeq, TypeDef;
 non terminal Type             Type, SubrangeType;
+non terminal Type             RecordType;
+non terminal Type             PointerType;
 non terminal                  VarDeclSeq, VarDecl;
 non terminal Type             TypeIdentifier; 
 non terminal DeclNode.ProcedureNode ProcedureDef;
@@ -346,11 +348,24 @@ Type ::= TypeIdentifier:type
         {:
             RESULT = type;
         :}
+	| RecordType:type
+		{:
+			// TODO	
+            RESULT = type;
+        	System.out.println("Type -> RecordType");
+		:} 
+	| PointerType:type
+		{:
+			// TODO
+            RESULT = type;
+        	System.out.println("Type -> PointerType");
+		:}
     | error:err
         {:
             RESULT = Type.ERROR_TYPE;
         :}
     ;
+    
 TypeIdentifier ::= IDENTIFIER:id
         {: /* As the type identifier may not be defined at this point
             * the abstract syntax tree records the IDENTIFIER,
@@ -360,12 +375,30 @@ TypeIdentifier ::= IDENTIFIER:id
                                          new Position( idleft ) );
         :}
     ;
+    
 SubrangeType ::= Constant:lo RANGE Constant:hi
         {:
+        	System.out.println("recognized SubrangeType");
             RESULT = new Type.SubrangeType( lo, hi );
         :}
     ;
+    
 
+RecordType ::= /* KW_RECORD FieldList KW_END */
+        {:
+        	// TODO
+        	System.out.println("recognized RecordType");
+        :}
+    ;
+    
+PointerType ::= POINTER TypeIdentifier:type
+        {:
+        	// TODO
+        	System.out.println("recognized PointerType");
+            RESULT = new Type.PointerType( type );
+        :}
+    ;
+    
 VarDeclSeq ::= VarDecl SEMICOLON
     |  VarDeclSeq VarDecl SEMICOLON
     ;
@@ -485,6 +518,10 @@ LValue ::= IDENTIFIER:id
         {:
             RESULT = new ExpNode.IdentifierNode( new Position(idleft), id );
         :}
+    |  LValue:lval POINTER
+        {:
+            RESULT = new ExpNode.DereferenceNode( new Position (lvalleft), lval );
+        :} 
     ;
 
 /* To allow for adding logical expressions. */
@@ -599,6 +636,10 @@ Factor ::= PLUS Factor:e
     |  LValue:lval
         {:
             RESULT = lval;
+        :}
+    |  KW_NEW TypeIdentifier:type
+        {:
+            RESULT = new ExpNode.IdentifierNode( new Position(typeleft), type );
         :}
     ;
 

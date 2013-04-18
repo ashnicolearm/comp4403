@@ -1,6 +1,9 @@
 // valid program
-type 
-  List = ^Element;
+type
+  T1 = ^int;
+var
+  x: T1;
 begin
-	write 1
+  x := new T1;
+  x^ := 22;
 end
