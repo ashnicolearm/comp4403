@@ -1,0 +1,6 @@
+// valid program
+type 
+  List = ^Element;
+begin
+	write 1
+end
