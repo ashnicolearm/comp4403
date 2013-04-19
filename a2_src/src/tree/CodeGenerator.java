@@ -366,6 +366,11 @@ public class CodeGenerator
         // Widening doesn't require anything extra
         return node.getExp().genCode( this );
     }
+    
+    /** Generate code to resolve a TypeIdentifier. */
+    public Code visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node) {
+        return node.genCode( this );
+    }
 
     private void fatal( String message, Position pos ) {
         errors.errorMessage( message, Severity.FATAL, pos);

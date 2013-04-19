@@ -298,6 +298,11 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         // Nothing to do.
         return node;
     }
+    
+    public ExpNode visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node) {
+        // TODO
+        return node;
+    }
 
     /** Report a (semantic) error. */
     private void error(String message, Position pos) {
