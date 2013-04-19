@@ -19,4 +19,5 @@ public interface ExpVisitor {
     void visitDereferenceNode(ExpNode.DereferenceNode node);
     void visitNarrowSubrangeNode(ExpNode.NarrowSubrangeNode node);
     void visitWidenSubrangeNode(ExpNode.WidenSubrangeNode node);
+    void visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node);
 }

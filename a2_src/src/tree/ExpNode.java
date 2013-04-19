@@ -450,5 +450,29 @@ public abstract class ExpNode {
             return "WidenSubrange(" + exp + ":" + getType() + ")";
         }
     }
+    
+    /** Tree node representing a type identifier. */
+    public static class TypeIdentifierNode extends ExpNode {
+        public TypeIdentifierNode( Position pos, Type type )
+        {
+            super( pos, type );
+        }
+        @Override
+        public ExpNode transform( ExpTransform<ExpNode> visitor ) {
+            return visitor.visitTypeIdentifierNode( this );
+        }
+        @Override
+        public Code genCode( ExpTransform<Code> visitor ) {
+            return visitor.visitTypeIdentifierNode( this );
+        }
+        @Override
+        public void accept( ExpVisitor visitor ) {
+            visitor.visitTypeIdentifierNode( this );
+        }
+        @Override
+        public String toString() {
+            return "TypeIdentifier(" + getType() + ")";
+        }
+    }
 
 }

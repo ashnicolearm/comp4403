@@ -378,7 +378,6 @@ TypeIdentifier ::= IDENTIFIER:id
     
 SubrangeType ::= Constant:lo RANGE Constant:hi
         {:
-        	System.out.println("recognized SubrangeType");
             RESULT = new Type.SubrangeType( lo, hi );
         :}
     ;
@@ -520,7 +519,8 @@ LValue ::= IDENTIFIER:id
         :}
     |  LValue:lval POINTER
         {:
-            RESULT = new ExpNode.DereferenceNode( new Position (lvalleft), lval );
+        	System.out.println("LValue POINTER");
+            // RESULT = new Type.ReferenceType( lval );
         :} 
     ;
 
@@ -639,7 +639,8 @@ Factor ::= PLUS Factor:e
         :}
     |  KW_NEW TypeIdentifier:type
         {:
-            RESULT = new ExpNode.IdentifierNode( new Position(typeleft), type );
+        	Position pos = new Position( typeleft );
+        	RESULT = new ExpNode.TypeIdentifierNode( pos, type.resolveType( pos ) );
         :}
     ;
 
