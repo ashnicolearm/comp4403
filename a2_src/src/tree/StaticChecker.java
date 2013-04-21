@@ -300,7 +300,20 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     }
     
     public ExpNode visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node) {
-        // TODO
+    	Type type = node.getType();
+    	/*
+    	Type refType = new Type.ReferenceType(type);
+    	node.setType(refType);
+    	*/
+    	
+    	/* To be dereferenced (using "^") an LValue, p, must be of type ref(PointerType(T))
+    	 * for some type T */
+    	if (type.getPointerType() == null) {
+    		error("LValue must be of type ref(PointerType(" + type + "))", node.getPosition());
+    	} else {
+	    	node.setType(type.getPointerType());
+    	}
+    	
         return node;
     }
 

@@ -169,6 +169,8 @@ non terminal                  TypeDefSeq, TypeDef;
 non terminal Type             Type, SubrangeType;
 non terminal Type             RecordType;
 non terminal Type             PointerType;
+non terminal Type.RecordType  FieldList, Fields;
+non terminal Type.Field		  Field;
 non terminal                  VarDeclSeq, VarDecl;
 non terminal Type             TypeIdentifier; 
 non terminal DeclNode.ProcedureNode ProcedureDef;
@@ -381,12 +383,12 @@ SubrangeType ::= Constant:lo RANGE Constant:hi
             RESULT = new Type.SubrangeType( lo, hi );
         :}
     ;
-    
 
-RecordType ::= /* KW_RECORD FieldList KW_END */
+RecordType ::= KW_RECORD FieldList:fl KW_END 
         {:
         	// TODO
         	System.out.println("recognized RecordType");
+            RESULT = new Type.RecordType();
         :}
     ;
     
@@ -397,7 +399,35 @@ PointerType ::= POINTER TypeIdentifier:type
             RESULT = new Type.PointerType( type );
         :}
     ;
-    
+
+FieldList ::= /* empty */
+        {:
+            RESULT = new Type.RecordType();
+        :}
+	| Fields:fl 
+		{:
+            RESULT = fl;
+		:}
+	;
+	
+Fields ::= Field:f 
+		{:
+			RESULT = new Type.RecordType();
+			RESULT.add( f );	
+		:}
+	| Fields:fl SEMICOLON Field:f 
+		{:
+			fl.add( f );	
+			RESULT = fl;
+		:}
+   	;
+
+Field ::= IDENTIFIER:id COLON TypeIdentifier:type 
+	{:
+		RESULT = new Type.Field( new Position( idleft), id, type );
+	:}
+	;
+   	
 VarDeclSeq ::= VarDecl SEMICOLON
     |  VarDeclSeq VarDecl SEMICOLON
     ;
@@ -520,7 +550,7 @@ LValue ::= IDENTIFIER:id
     |  LValue:lval POINTER
         {:
         	System.out.println("LValue POINTER");
-            // RESULT = new Type.ReferenceType( lval );
+            RESULT = new ExpNode.DereferenceNode( new Position( lvalleft ), lval );
         :} 
     ;
 
@@ -639,8 +669,8 @@ Factor ::= PLUS Factor:e
         :}
     |  KW_NEW TypeIdentifier:type
         {:
-        	Position pos = new Position( typeleft );
-        	RESULT = new ExpNode.TypeIdentifierNode( pos, type.resolveType( pos ) );
+        	Position pos = new Position( typeleft );	
+        	RESULT = new ExpNode.TypeIdentifierNode( pos, type );
         :}
     ;
 
