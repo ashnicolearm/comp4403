@@ -9,6 +9,8 @@ import source.Position;
 import source.Severity;
 import syms.SymEntry;
 import syms.Type;
+import tree.ExpNode.RecordEntryNode;
+import tree.ExpNode.RecordFieldsNode;
 import tree.Tree.*;
 
 /** class CodeGenerator implements code generation using the
@@ -371,9 +373,18 @@ public class CodeGenerator
     public Code visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node) {
         return node.genCode( this );
     }
+    
+	public Code visitRecordFieldsNode(RecordFieldsNode node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public Code visitRecordEntryNode(RecordEntryNode node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     private void fatal( String message, Position pos ) {
         errors.errorMessage( message, Severity.FATAL, pos);
     }
-
 }

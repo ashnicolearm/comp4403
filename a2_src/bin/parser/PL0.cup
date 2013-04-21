@@ -187,7 +187,9 @@ non terminal ExpNode          Condition,
                               RelCondition,
                               Exp,
                               Term,
-                              Factor;
+                              Factor,
+                              RecordFields;
+non terminal ExpNode.RecordFieldsNode ExpList;
 non terminal BinaryOperator   Relation;
 non terminal BinaryOperator   AddOp;
 non terminal BinaryOperator   MulOp;
@@ -547,7 +549,12 @@ LValue ::= IDENTIFIER:id
         {:
             RESULT = new ExpNode.IdentifierNode( new Position(idleft), id );
         :}
-    |  LValue:lval POINTER
+    | LValue:lval PERIOD IDENTIFIER:id
+    	{:
+        	System.out.println("LValue PERIOD IDENTIFIER");
+    		RESULT = new ExpNode.RecordEntryNode( new Position( lvalleft ), lval, id ); 
+    	:}
+    | LValue:lval POINTER
         {:
         	System.out.println("LValue POINTER");
             RESULT = new ExpNode.DereferenceNode( new Position( lvalleft ), lval );
@@ -672,5 +679,30 @@ Factor ::= PLUS Factor:e
         	Position pos = new Position( typeleft );	
         	RESULT = new ExpNode.TypeIdentifierNode( pos, type );
         :}
+    |  TypeIdentifier:type LCURLY RecordFields:rf RCURLY 
+    	{:
+    		RESULT = rf;
+    	:}
     ;
-
+    
+RecordFields ::= /* empty */
+		{:
+			RESULT = new ExpNode.RecordFieldsNode();	
+		:}
+	| ExpList:e
+		{:
+			RESULT = e;
+		:}
+	;
+	
+ExpList ::= Condition:c 
+		{:
+			RESULT = new ExpNode.RecordFieldsNode( new Position( cleft ) );
+			RESULT.add( c );
+		:}
+	| ExpList:e COMMA Condition:c 
+		{:
+			e.add( c );
+			RESULT = e;
+		:}
+   	;

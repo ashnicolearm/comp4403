@@ -20,4 +20,6 @@ public interface ExpVisitor {
     void visitNarrowSubrangeNode(ExpNode.NarrowSubrangeNode node);
     void visitWidenSubrangeNode(ExpNode.WidenSubrangeNode node);
     void visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node);
+    void visitRecordFieldsNode(ExpNode.RecordFieldsNode node);
+    void visitRecordEntryNode(ExpNode.RecordEntryNode node);
 }

@@ -12,6 +12,8 @@ import syms.SymEntry;
 import syms.SymbolTable;
 import syms.Type;
 import tree.Coercion.IncompatibleTypes;
+import tree.ExpNode.RecordEntryNode;
+import tree.ExpNode.RecordFieldsNode;
 import tree.Tree.*;
 
 /** class StaticSemantics - Performs the static semantic checks on
@@ -316,6 +318,16 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     	
         return node;
     }
+    
+	public ExpNode visitRecordFieldsNode(RecordFieldsNode node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public ExpNode visitRecordEntryNode(RecordEntryNode node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     /** Report a (semantic) error. */
     private void error(String message, Position pos) {

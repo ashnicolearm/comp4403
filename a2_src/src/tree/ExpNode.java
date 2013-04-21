@@ -474,5 +474,81 @@ public abstract class ExpNode {
             return "TypeIdentifier(" + getType() + ")";
         }
     }
+    
+    /** Tree node representing a RecordFields node. */
+    public static class RecordFieldsNode extends ExpNode {
+    	private List<ExpNode> conditions;
+        public RecordFieldsNode()
+        {
+            super( Position.NO_POSITION );
+        }
+        public RecordFieldsNode(Position pos)
+        {
+            super( pos );
+            ArrayList<ExpNode> conditions = new ArrayList<ExpNode>();
+        }
+        @Override
+        public ExpNode transform( ExpTransform<ExpNode> visitor ) {
+            return visitor.visitRecordFieldsNode( this );
+        }
+        @Override
+        public Code genCode( ExpTransform<Code> visitor ) {
+            return visitor.visitRecordFieldsNode( this );
+        }
+        @Override
+        public void accept( ExpVisitor visitor ) {
+            visitor.visitRecordFieldsNode( this );
+        }
+        public List<ExpNode> getConditions() {
+        	return conditions;
+        }
+        public void add(ExpNode c) {
+        	conditions.add(c);
+        }
+        @Override
+        public String toString() {
+            String result = "";
+            String sep = "";
+            for( ExpNode c : conditions ) {
+                result += sep + c.toString();
+                sep = "; ";
+            }
+            return result;
+        }
+    }
 
+    /** Tree node representing a record entry. */
+    public static class RecordEntryNode extends ExpNode {
+    	ExpNode exp;
+    	String id;
+    	
+        public RecordEntryNode( Position pos, ExpNode exp, String id )
+        {
+            super( pos );
+            this.exp = exp;
+            this.id = id;
+        }
+        @Override
+        public ExpNode transform( ExpTransform<ExpNode> visitor ) {
+            return visitor.visitRecordEntryNode( this );
+        }
+        @Override
+        public Code genCode( ExpTransform<Code> visitor ) {
+            return visitor.visitRecordEntryNode( this );
+        }
+        @Override
+        public void accept( ExpVisitor visitor ) {
+            visitor.visitRecordEntryNode( this );
+        }
+        public ExpNode getExp() {
+        	return this.exp;
+        }
+        public String getIdent() {
+        	return this.id;
+        }
+        @Override
+        public String toString() {
+            return "RecordEntry(" + getType() + ")";
+        }
+    }
 }
