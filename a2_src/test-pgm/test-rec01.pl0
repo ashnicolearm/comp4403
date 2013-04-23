@@ -2,14 +2,12 @@
 type
     RT = record
           x: int;
-          y: int
+          y: int;
         end;
-var 
-    r: RT;
+var
+	x: RT;
 begin
-  r.x := 101;
-  r.y := 100;
-  write r.x;
-  write r.y
+	x.y = 3;
+	write x.y
 end
 

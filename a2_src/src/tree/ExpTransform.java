@@ -16,7 +16,7 @@ public interface ExpTransform<ResultType> {
     ResultType visitDereferenceNode(ExpNode.DereferenceNode node);
     ResultType visitNarrowSubrangeNode(ExpNode.NarrowSubrangeNode node);
     ResultType visitWidenSubrangeNode(ExpNode.WidenSubrangeNode node);
-    ResultType visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node);
+    ResultType visitRecordConstructorNode(ExpNode.RecordConstructorNode node);
     ResultType visitRecordFieldsNode(ExpNode.RecordFieldsNode node);
     ResultType visitRecordEntryNode(ExpNode.RecordEntryNode node);
 }

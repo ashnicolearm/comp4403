@@ -452,32 +452,42 @@ public abstract class ExpNode {
     }
     
     /** Tree node representing a type identifier. */
-    public static class TypeIdentifierNode extends ExpNode {
-        public TypeIdentifierNode( Position pos, Type type )
+    public static class RecordConstructorNode extends ExpNode {
+    	ExpNode fields;
+    	Type type;
+        public RecordConstructorNode( Position pos, Type type, ExpNode fields )
         {
             super( pos, type );
+            this.type = type;
+            this.fields = fields;
         }
         @Override
         public ExpNode transform( ExpTransform<ExpNode> visitor ) {
-            return visitor.visitTypeIdentifierNode( this );
+            return visitor.visitRecordConstructorNode( this );
         }
         @Override
         public Code genCode( ExpTransform<Code> visitor ) {
-            return visitor.visitTypeIdentifierNode( this );
+            return visitor.visitRecordConstructorNode( this );
         }
         @Override
         public void accept( ExpVisitor visitor ) {
-            visitor.visitTypeIdentifierNode( this );
+            visitor.visitRecordConstructorNode( this );
+        }
+        public Type getType() {
+        	return this.type;
+        }
+        public ExpNode getFields() {
+        	return this.fields;
         }
         @Override
         public String toString() {
-            return "TypeIdentifier(" + getType() + ")";
+        	return "RECORD CONSTRUCTOR";
         }
     }
     
     /** Tree node representing a RecordFields node. */
     public static class RecordFieldsNode extends ExpNode {
-    	private List<ExpNode> conditions;
+    	private List<ExpNode> fields;
         public RecordFieldsNode()
         {
             super( Position.NO_POSITION );
@@ -485,7 +495,7 @@ public abstract class ExpNode {
         public RecordFieldsNode(Position pos)
         {
             super( pos );
-            ArrayList<ExpNode> conditions = new ArrayList<ExpNode>();
+            fields = new ArrayList<ExpNode>();
         }
         @Override
         public ExpNode transform( ExpTransform<ExpNode> visitor ) {
@@ -499,18 +509,18 @@ public abstract class ExpNode {
         public void accept( ExpVisitor visitor ) {
             visitor.visitRecordFieldsNode( this );
         }
-        public List<ExpNode> getConditions() {
-        	return conditions;
+        public List<ExpNode> getFields() {
+        	return fields;
         }
-        public void add(ExpNode c) {
-        	conditions.add(c);
+        public void add(ExpNode e) {
+        	fields.add(e);
         }
         @Override
         public String toString() {
             String result = "";
             String sep = "";
-            for( ExpNode c : conditions ) {
-                result += sep + c.toString();
+            for( ExpNode e : fields ) {
+                result += sep + e.toString();
                 sep = "; ";
             }
             return result;
@@ -519,14 +529,14 @@ public abstract class ExpNode {
 
     /** Tree node representing a record entry. */
     public static class RecordEntryNode extends ExpNode {
-    	ExpNode exp;
-    	String id;
+    	ExpNode record;
+    	String field;
     	
-        public RecordEntryNode( Position pos, ExpNode exp, String id )
+        public RecordEntryNode( Position pos, ExpNode record, String field )
         {
             super( pos );
-            this.exp = exp;
-            this.id = id;
+            this.record = record;
+            this.field = field;
         }
         @Override
         public ExpNode transform( ExpTransform<ExpNode> visitor ) {
@@ -540,11 +550,11 @@ public abstract class ExpNode {
         public void accept( ExpVisitor visitor ) {
             visitor.visitRecordEntryNode( this );
         }
-        public ExpNode getExp() {
-        	return this.exp;
+        public ExpNode getRecord() {
+        	return this.record;
         }
-        public String getIdent() {
-        	return this.id;
+        public String getField() {
+        	return this.field;
         }
         @Override
         public String toString() {

@@ -19,7 +19,7 @@ public interface ExpVisitor {
     void visitDereferenceNode(ExpNode.DereferenceNode node);
     void visitNarrowSubrangeNode(ExpNode.NarrowSubrangeNode node);
     void visitWidenSubrangeNode(ExpNode.WidenSubrangeNode node);
-    void visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node);
+    void visitRecordConstructorNode(ExpNode.RecordConstructorNode node);
     void visitRecordFieldsNode(ExpNode.RecordFieldsNode node);
     void visitRecordEntryNode(ExpNode.RecordEntryNode node);
 }

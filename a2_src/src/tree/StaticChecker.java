@@ -11,6 +11,7 @@ import source.Severity;
 import syms.SymEntry;
 import syms.SymbolTable;
 import syms.Type;
+import syms.Type.Field;
 import tree.Coercion.IncompatibleTypes;
 import tree.ExpNode.RecordEntryNode;
 import tree.ExpNode.RecordFieldsNode;
@@ -301,7 +302,7 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         return node;
     }
     
-    public ExpNode visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node) {
+    public ExpNode visitRecordConstructorNode(ExpNode.RecordConstructorNode node) {
     	Type type = node.getType();
     	/*
     	Type refType = new Type.ReferenceType(type);
@@ -319,14 +320,34 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         return node;
     }
     
+    /* Used when constructing a record with curlys */
 	public ExpNode visitRecordFieldsNode(RecordFieldsNode node) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	
+	/* Used when accessing a record's fields */
 	public ExpNode visitRecordEntryNode(RecordEntryNode node) {
-		// TODO Auto-generated method stub
-		return null;
+		ExpNode record = node.getRecord().transform( this );
+		Type.RecordType types = record.getType().getRecordType();
+		boolean exists = false;
+		
+		
+		/* Check field exists in record field */
+		for (Field t : types.getFieldList()) {
+			String recordField = t.getId();
+			if (node.getField().equals(recordField)) {
+				exists = true;
+			}
+		}
+		
+		if (!exists) {
+			error("Field does not exist in record", node.getPosition());
+		} else {
+			node.setType(types.getFieldType(node.getField()));
+		}
+		
+		return node;
 	}
 
     /** Report a (semantic) error. */

@@ -390,7 +390,8 @@ RecordType ::= KW_RECORD FieldList:fl KW_END
         {:
         	// TODO
         	System.out.println("recognized RecordType");
-            RESULT = new Type.RecordType();
+            RESULT = fl;
+            
         :}
     ;
     
@@ -677,11 +678,12 @@ Factor ::= PLUS Factor:e
     |  KW_NEW TypeIdentifier:type
         {:
         	Position pos = new Position( typeleft );	
-        	RESULT = new ExpNode.TypeIdentifierNode( pos, type );
+        	// RESULT = new ExpNode.TypeIdentifierNode( pos, type );
         :}
     |  TypeIdentifier:type LCURLY RecordFields:rf RCURLY 
     	{:
-    		RESULT = rf;
+    		System.out.println("RECORD CONSTRUCTOR");
+    		RESULT = new ExpNode.RecordConstructorNode(new Position( typeleft ), type, rf);
     	:}
     ;
     

@@ -370,7 +370,7 @@ public class CodeGenerator
     }
     
     /** Generate code to resolve a TypeIdentifier. */
-    public Code visitTypeIdentifierNode(ExpNode.TypeIdentifierNode node) {
+    public Code visitRecordConstructorNode(ExpNode.RecordConstructorNode node) {
         return node.genCode( this );
     }
     
