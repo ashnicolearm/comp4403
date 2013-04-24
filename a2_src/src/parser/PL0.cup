@@ -358,7 +358,6 @@ Type ::= TypeIdentifier:type
 		:} 
 	| PointerType:type
 		{:
-			// TODO
             RESULT = type;
 		:}
     | error:err
@@ -385,15 +384,12 @@ SubrangeType ::= Constant:lo RANGE Constant:hi
 
 RecordType ::= KW_RECORD FieldList:fl KW_END 
         {:
-        	// TODO
             RESULT = fl;
-            
         :}
     ;
     
 PointerType ::= POINTER TypeIdentifier:type
         {:
-        	// TODO
             RESULT = new Type.PointerType( type );
         :}
     ;
@@ -551,7 +547,8 @@ LValue ::= IDENTIFIER:id
     	:}
     | LValue:lval POINTER
         {:
-            RESULT = new ExpNode.DereferenceNode( new Position( lvalleft ), lval );
+        	// TODO
+            RESULT = new ExpNode.PointerNode( new Position( lvalleft ), lval );
         :} 
     ;
 
@@ -670,8 +667,7 @@ Factor ::= PLUS Factor:e
         :}
     |  KW_NEW TypeIdentifier:type
         {:
-        	Position pos = new Position( typeleft );	
-        	// RESULT = new ExpNode.TypeIdentifierNode( pos, type );
+        	RESULT = new ExpNode.PointerConstructorNode( new Position( typeleft ), type );
         :}
     |  TypeIdentifier:type LCURLY RecordFields:rf RCURLY 
     	{:
