@@ -2,12 +2,12 @@
 type
     RT = record
           x: int;
-          y: int;
+          y: int
         end;
 var
 	x: RT;
 begin
-	x.y = 3;
+	x.y := 3;
 	write x.y
 end
 

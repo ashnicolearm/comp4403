@@ -354,15 +354,12 @@ Type ::= TypeIdentifier:type
         :}
 	| RecordType:type
 		{:
-			// TODO	
             RESULT = type;
-        	System.out.println("Type -> RecordType");
 		:} 
 	| PointerType:type
 		{:
 			// TODO
             RESULT = type;
-        	System.out.println("Type -> PointerType");
 		:}
     | error:err
         {:
@@ -389,7 +386,6 @@ SubrangeType ::= Constant:lo RANGE Constant:hi
 RecordType ::= KW_RECORD FieldList:fl KW_END 
         {:
         	// TODO
-        	System.out.println("recognized RecordType");
             RESULT = fl;
             
         :}
@@ -398,7 +394,6 @@ RecordType ::= KW_RECORD FieldList:fl KW_END
 PointerType ::= POINTER TypeIdentifier:type
         {:
         	// TODO
-        	System.out.println("recognized PointerType");
             RESULT = new Type.PointerType( type );
         :}
     ;
@@ -552,12 +547,10 @@ LValue ::= IDENTIFIER:id
         :}
     | LValue:lval PERIOD IDENTIFIER:id
     	{:
-        	System.out.println("LValue PERIOD IDENTIFIER");
     		RESULT = new ExpNode.RecordEntryNode( new Position( lvalleft ), lval, id ); 
     	:}
     | LValue:lval POINTER
         {:
-        	System.out.println("LValue POINTER");
             RESULT = new ExpNode.DereferenceNode( new Position( lvalleft ), lval );
         :} 
     ;
@@ -682,7 +675,6 @@ Factor ::= PLUS Factor:e
         :}
     |  TypeIdentifier:type LCURLY RecordFields:rf RCURLY 
     	{:
-    		System.out.println("RECORD CONSTRUCTOR");
     		RESULT = new ExpNode.RecordConstructorNode(new Position( typeleft ), type, rf);
     	:}
     ;

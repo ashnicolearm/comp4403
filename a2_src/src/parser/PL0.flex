@@ -129,6 +129,8 @@ Letter  = [a-zA-Z]
 
 "("     { return makeToken( CUPToken.LPAREN ); }
 ")"     { return makeToken( CUPToken.RPAREN ); }
+"}"     { return makeToken( CUPToken.RCURLY ); }
+"{"     { return makeToken( CUPToken.LCURLY ); }
 ";"     { return makeToken( CUPToken.SEMICOLON ); }
 ":="    { return makeToken( CUPToken.ASSIGN ); }
 ":"     { return makeToken( CUPToken.COLON ); }

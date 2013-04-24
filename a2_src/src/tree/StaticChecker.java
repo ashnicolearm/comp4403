@@ -303,48 +303,96 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     }
     
     public ExpNode visitRecordConstructorNode(ExpNode.RecordConstructorNode node) {
-    	Type type = node.getType();
-    	/*
-    	Type refType = new Type.ReferenceType(type);
-    	node.setType(refType);
-    	*/
-    	
-    	/* To be dereferenced (using "^") an LValue, p, must be of type ref(PointerType(T))
-    	 * for some type T */
-    	if (type.getPointerType() == null) {
-    		error("LValue must be of type ref(PointerType(" + type + "))", node.getPosition());
-    	} else {
-	    	node.setType(type.getPointerType());
-    	}
-    	
-        return node;
+    	/* Make sure record exists and retrieve it */
+		Type recordType = node.getType().resolveType(node.getPosition()).getRecordType();
+		
+		/* Can safely cast since type is resolved */
+		Type.RecordType record = (Type.RecordType) recordType;
+		
+		/* Retrieve fields in the record */
+		List<Field> recordFields = record.getFieldList();
+		
+		/* Retrieve fields in the constructor */
+		List<ExpNode> constructorFields = ((RecordFieldsNode) node.getFields()).getFields();
+		
+		/* Invalid number of arguments */
+		if (recordFields.size() != constructorFields.size()) {
+			error("Invalid arguments", node.getPosition());
+			node.setType(Type.ERROR_TYPE);
+			return node;
+		}
+		
+		List<String> setFields = new ArrayList<String>();
+		
+		/* Set types of constructor fields to match record */
+		for (int i = 0; i < constructorFields.size(); i++) {
+			Field recordField = recordFields.get(i);
+			
+			/* Check for duplicate fields */
+			if (setFields.contains(recordField.getId())) {
+				error("Duplicate field assignment", node.getPosition());
+				node.setType(Type.ERROR_TYPE);
+				return node;
+			} else {
+				/* Add field to list of already set fields */
+				setFields.add(recordField.getId());
+			}
+			
+			Type expected = recordField.resolveType();
+			ExpNode newNode = Coercion.coerce(constructorFields.get(i), expected);
+			constructorFields.set(i, newNode);
+		}
+		
+		/* Make sure we have correct type */
+		if (node.getType() != Type.ERROR_TYPE) {
+			node.setType(recordType);
+		}
+		
+    	return node;
     }
     
     /* Used when constructing a record with curlys */
 	public ExpNode visitRecordFieldsNode(RecordFieldsNode node) {
-		
-		return null;
+		// Nothing to do?
+		return node;
 	}
 	
 	/* Used when accessing a record's fields */
 	public ExpNode visitRecordEntryNode(RecordEntryNode node) {
+		/* Get record */
 		ExpNode record = node.getRecord().transform( this );
-		Type.RecordType types = record.getType().getRecordType();
-		boolean exists = false;
 		
+		/* Get record type */
+		Type.RecordType types = record.getType().getRecordType();
+		
+		/* Create reference type to node's type */
+		int fieldCount = 0;
 		
 		/* Check field exists in record field */
 		for (Field t : types.getFieldList()) {
 			String recordField = t.getId();
 			if (node.getField().equals(recordField)) {
-				exists = true;
+				fieldCount++;
 			}
 		}
 		
-		if (!exists) {
+		/* Semantic checking */
+		if (fieldCount > 1) {
+			error("Duplicate field assignment", node.getPosition());
+			node.setType(Type.ERROR_TYPE);
+			return node;
+		} else if (fieldCount < 1) {
 			error("Field does not exist in record", node.getPosition());
-		} else {
-			node.setType(types.getFieldType(node.getField()));
+			node.setType(Type.ERROR_TYPE);
+			return node;
+		}
+		
+		node.setType(types.getFieldType(node.getField()));
+		
+		/* Make sure we have an LValue */
+		if (node.getType() != Type.ERROR_TYPE) {
+			Type refType = new Type.ReferenceType(node.getType());
+			node.setType(refType);
 		}
 		
 		return node;

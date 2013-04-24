@@ -476,12 +476,15 @@ public abstract class ExpNode {
         public Type getType() {
         	return this.type;
         }
+        public void setType(Type t) {
+        	this.type = t;
+        }
         public ExpNode getFields() {
         	return this.fields;
         }
         @Override
         public String toString() {
-        	return "RECORD CONSTRUCTOR";
+        	return "RECORD CONSTRUCTOR( " + fields + " )";
         }
     }
     
