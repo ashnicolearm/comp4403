@@ -667,11 +667,12 @@ Factor ::= PLUS Factor:e
         :}
     |  KW_NEW TypeIdentifier:type
         {:
+        	// TODO
         	RESULT = new ExpNode.PointerConstructorNode( new Position( typeleft ), type );
         :}
     |  TypeIdentifier:type LCURLY RecordFields:rf RCURLY 
     	{:
-    		RESULT = new ExpNode.RecordConstructorNode(new Position( typeleft ), type, rf);
+    		RESULT = new ExpNode.RecordConstructorNode( new Position( typeleft ), type, rf );
     	:}
     ;
     

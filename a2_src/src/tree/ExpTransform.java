@@ -19,4 +19,6 @@ public interface ExpTransform<ResultType> {
     ResultType visitRecordConstructorNode(ExpNode.RecordConstructorNode node);
     ResultType visitRecordFieldsNode(ExpNode.RecordFieldsNode node);
     ResultType visitRecordEntryNode(ExpNode.RecordEntryNode node);
+    ResultType visitPointerConstructorNode(ExpNode.PointerConstructorNode node);
+    ResultType visitPointerNode(ExpNode.PointerNode node);
 }

@@ -22,4 +22,6 @@ public interface ExpVisitor {
     void visitRecordConstructorNode(ExpNode.RecordConstructorNode node);
     void visitRecordFieldsNode(ExpNode.RecordFieldsNode node);
     void visitRecordEntryNode(ExpNode.RecordEntryNode node);
+    void visitPointerConstructorNode(ExpNode.PointerConstructorNode node);
+    void visitPointerNode(ExpNode.PointerNode node);
 }

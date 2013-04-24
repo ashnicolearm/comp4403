@@ -13,6 +13,8 @@ import syms.SymbolTable;
 import syms.Type;
 import syms.Type.Field;
 import tree.Coercion.IncompatibleTypes;
+import tree.ExpNode.PointerConstructorNode;
+import tree.ExpNode.PointerNode;
 import tree.ExpNode.RecordEntryNode;
 import tree.ExpNode.RecordFieldsNode;
 import tree.Tree.*;
@@ -313,7 +315,7 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 		List<Field> recordFields = record.getFieldList();
 		
 		/* Retrieve fields in the constructor */
-		List<ExpNode> constructorFields = ((RecordFieldsNode) node.getFields()).getFields();
+		List<ExpNode> constructorFields = ((RecordFieldsNode) node.getFields().transform(this)).getFields();
 		
 		/* Invalid number of arguments */
 		if (recordFields.size() != constructorFields.size()) {
@@ -322,6 +324,7 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 			return node;
 		}
 		
+		/* List of already set fields */
 		List<String> setFields = new ArrayList<String>();
 		
 		/* Set types of constructor fields to match record */
@@ -353,7 +356,14 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     
     /* Used when constructing a record with curlys */
 	public ExpNode visitRecordFieldsNode(RecordFieldsNode node) {
-		// Nothing to do?
+		List<ExpNode> fields = node.getFields();
+		
+		/* Make sure fields are of correct type */
+		for (int i = 0; i < fields.size(); i++) {
+			ExpNode currentField = fields.get(i);
+			fields.set(i, currentField.transform( this ) );
+		}
+		
 		return node;
 	}
 	
@@ -364,6 +374,8 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 		
 		/* Get record type */
 		Type.RecordType types = record.getType().getRecordType();
+		record.setType(types);
+		node.setRecord(record);
 		
 		/* Create reference type to node's type */
 		int fieldCount = 0;
@@ -395,6 +407,16 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 			node.setType(refType);
 		}
 		
+		return node;
+	}
+	
+	public ExpNode visitPointerConstructorNode(PointerConstructorNode node) {
+		// TODO Auto-generated method stub
+		return node;
+	}
+	
+	public ExpNode visitPointerNode(PointerNode node) {
+		// TODO Auto-generated method stub
 		return node;
 	}
 

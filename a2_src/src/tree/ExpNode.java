@@ -556,12 +556,67 @@ public abstract class ExpNode {
         public ExpNode getRecord() {
         	return this.record;
         }
+		public void setRecord(ExpNode record) {
+			this.record = record;
+		}
         public String getField() {
         	return this.field;
         }
         @Override
         public String toString() {
             return "RecordEntry(" + getType() + ")";
+        }
+    }
+    /** Tree node representing a pointer constructor. */
+    public static class PointerConstructorNode extends ExpNode {
+    	Type type;
+    	
+        public PointerConstructorNode( Position pos, Type type )
+        {
+        	super( pos, type );
+            this.type = type;
+        }
+        @Override
+        public ExpNode transform( ExpTransform<ExpNode> visitor ) {
+            return visitor.visitPointerConstructorNode( this );
+        }
+        @Override
+        public Code genCode( ExpTransform<Code> visitor ) {
+            return visitor.visitPointerConstructorNode( this );
+        }
+        @Override
+        public void accept( ExpVisitor visitor ) {
+            visitor.visitPointerConstructorNode( this );
+        }
+        @Override
+        public String toString() {
+            return "new Pointer(" + getType() + ")";
+        }
+    }
+    /** Tree node representing a pointer constructor. */
+    public static class PointerNode extends ExpNode {
+    	ExpNode value;
+    	
+        public PointerNode( Position pos, ExpNode value )
+        {
+            super( pos );
+            this.value = value;
+        }
+        @Override
+        public ExpNode transform( ExpTransform<ExpNode> visitor ) {
+            return visitor.visitPointerNode( this );
+        }
+        @Override
+        public Code genCode( ExpTransform<Code> visitor ) {
+            return visitor.visitPointerNode( this );
+        }
+        @Override
+        public void accept( ExpVisitor visitor ) {
+            visitor.visitPointerNode( this );
+        }
+        @Override
+        public String toString() {
+            return "Pointer(" + getType() + ")";
         }
     }
 }

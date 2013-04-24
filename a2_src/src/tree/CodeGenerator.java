@@ -9,6 +9,8 @@ import source.Position;
 import source.Severity;
 import syms.SymEntry;
 import syms.Type;
+import tree.ExpNode.PointerConstructorNode;
+import tree.ExpNode.PointerNode;
 import tree.ExpNode.RecordEntryNode;
 import tree.ExpNode.RecordFieldsNode;
 import tree.Tree.*;
@@ -371,20 +373,51 @@ public class CodeGenerator
     
     /** Generate code to resolve a TypeIdentifier. */
     public Code visitRecordConstructorNode(ExpNode.RecordConstructorNode node) {
-        return node.genCode( this );
+    	Code code = node.getFields().genCode(this);
+		return code;
     }
     
 	public Code visitRecordFieldsNode(RecordFieldsNode node) {
-		// TODO Auto-generated method stub
-		return null;
+		Code code = new Code();
+		
+		for (ExpNode field : node.getFields()) {
+			code.append(field.genCode(this));
+		}
+		
+		return code;
 	}
 	
+    /* Record access with PERIOD (e.g. r.x) */
 	public Code visitRecordEntryNode(RecordEntryNode node) {
-		// TODO Auto-generated method stub
-		return null;
+		/* Get record */
+		Type.RecordType recordType = node.getRecord().getType().getRecordType();
+		
+		/* Load record offset */
+		Code code = node.getRecord().genCode( this );
+		
+		/* Get offset of field */
+		int fieldOffset = recordType.getOffset(node.getField());
+		
+		/* Load the offset of field + record */
+		code.genLoadConstant( fieldOffset );
+		code.generateOp( Operation.ADD );
+		
+		return code;
+	}
+	
+	public Code visitPointerConstructorNode(PointerConstructorNode node) {
+		Code code = new Code();
+		return code;
+	}
+	
+	public Code visitPointerNode(PointerNode node) {
+		Code code = new Code();
+		return code;
 	}
 
     private void fatal( String message, Position pos ) {
         errors.errorMessage( message, Severity.FATAL, pos);
     }
+
+
 }
