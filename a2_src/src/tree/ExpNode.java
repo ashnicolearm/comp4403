@@ -569,12 +569,12 @@ public abstract class ExpNode {
     }
     /** Tree node representing a pointer constructor. */
     public static class PointerConstructorNode extends ExpNode {
-    	Type type;
+    	Type pointerType;
     	
-        public PointerConstructorNode( Position pos, Type type )
+        public PointerConstructorNode( Position pos, Type pointerType )
         {
-        	super( pos, type );
-            this.type = type;
+        	super( pos );
+            this.pointerType = pointerType;
         }
         @Override
         public ExpNode transform( ExpTransform<ExpNode> visitor ) {
@@ -587,6 +587,12 @@ public abstract class ExpNode {
         @Override
         public void accept( ExpVisitor visitor ) {
             visitor.visitPointerConstructorNode( this );
+        }
+        public Type getPointerType() {
+        	return this.pointerType;
+        }
+        public void setPointerType(Type pointerType) {
+        	this.pointerType = pointerType;
         }
         @Override
         public String toString() {
@@ -613,6 +619,12 @@ public abstract class ExpNode {
         @Override
         public void accept( ExpVisitor visitor ) {
             visitor.visitPointerNode( this );
+        }
+        public ExpNode getValue() {
+        	return this.value;
+        }
+        public void setValue(ExpNode value) {
+        	this.value = value;
         }
         @Override
         public String toString() {

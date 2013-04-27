@@ -12,7 +12,9 @@ import syms.SymEntry;
 import syms.SymbolTable;
 import syms.Type;
 import syms.Type.Field;
+import syms.Type.PointerType;
 import tree.Coercion.IncompatibleTypes;
+import tree.ExpNode.DereferenceNode;
 import tree.ExpNode.PointerConstructorNode;
 import tree.ExpNode.PointerNode;
 import tree.ExpNode.RecordEntryNode;
@@ -382,6 +384,7 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 		
 		/* Check field exists in record field */
 		for (Field t : types.getFieldList()) {
+			// TODO fix nullpointerexception
 			String recordField = t.getId();
 			if (node.getField().equals(recordField)) {
 				fieldCount++;
@@ -411,12 +414,33 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 	}
 	
 	public ExpNode visitPointerConstructorNode(PointerConstructorNode node) {
-		// TODO Auto-generated method stub
+		/* Get resolved type of pointer */
+		Type resolvedType = node.getPointerType().resolveType(node.getPosition());
+		
+		if (!(resolvedType instanceof Type.PointerType)) {
+			error("Cannot instantiate object of type " + node.getType() 
+					+ ", must be a pointer type", node.getPosition());
+			return node;
+		}
+		
+		/* Set the type of the node to the PointerType */
+		node.setType(resolvedType);
 		return node;
 	}
 	
 	public ExpNode visitPointerNode(PointerNode node) {
-		// TODO Auto-generated method stub
+		/* Resolve LValue */
+		ExpNode lval = node.getValue().transform( this );
+		node.setValue(lval);
+		
+		/* Get the type of pointer */
+		Type.PointerType lvalType = lval.getType().getPointerType();
+		
+		/* Create a reference type for an LValue */
+		Type.ReferenceType refType = new Type.ReferenceType(lvalType.getBaseType());
+		
+		/* Set node type to new refType*/
+		node.setType(refType);
 		return node;
 	}
 

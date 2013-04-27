@@ -4,6 +4,6 @@ type
 var
   x: T1;
 begin
-  x := new int
-  // x^ := 22
+  x := new T1;
+  x^ := nil
 end

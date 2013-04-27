@@ -390,7 +390,31 @@ RecordType ::= KW_RECORD FieldList:fl KW_END
     
 PointerType ::= POINTER TypeIdentifier:type
         {:
-            RESULT = new Type.PointerType( type );
+        	/* Create new type */
+        	Type.PointerType pointerType = new Type.PointerType(type);
+        	
+        	/* Define relational pair for pointers and nil types */
+        	Type.ProductType pointerProduct = new Type.ProductType(pointerType, pointerType);
+        	Type.ProductType nilPointerProduct = new Type.ProductType(pointerType, Type.NIL_TYPE);
+        	
+        	/* Define result of products */
+        	Type.FunctionType pointerFunction = 
+        		new Type.FunctionType(pointerProduct, Type.BOOLEAN_TYPE);
+        		
+        	Type.FunctionType nilPointerFunction = 
+        		new Type.FunctionType(nilPointerProduct, Type.BOOLEAN_TYPE);
+        	
+        	/* Lookup operators */
+        	SymEntry.OperatorEntry eqOp = symtab.lookupOperator("=");
+        	SymEntry.OperatorEntry neqOp = symtab.lookupOperator("!=");
+        	
+        	/* Extend the types for the operators */
+        	eqOp.extendType(pointerFunction);
+        	neqOp.extendType(pointerFunction);
+        	eqOp.extendType(nilPointerFunction);
+        	neqOp.extendType(nilPointerFunction);
+        	
+            RESULT = pointerType;
         :}
     ;
 
