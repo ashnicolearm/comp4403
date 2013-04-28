@@ -306,6 +306,7 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         return node;
     }
     
+    /* Used for constructing a record with curlys */
     public ExpNode visitRecordConstructorNode(ExpNode.RecordConstructorNode node) {
     	/* Make sure record exists and retrieve it */
 		Type recordType = node.getType().resolveType(node.getPosition()).getRecordType();
@@ -356,13 +357,15 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     	return node;
     }
     
-    /* Used when constructing a record with curlys */
+    /* Used when constructing a record with a DOT */
 	public ExpNode visitRecordFieldsNode(RecordFieldsNode node) {
 		List<ExpNode> fields = node.getFields();
 		
 		/* Make sure fields are of correct type */
 		for (int i = 0; i < fields.size(); i++) {
 			ExpNode currentField = fields.get(i);
+			
+			/* Transform and set each field to their correct type */
 			fields.set(i, currentField.transform( this ) );
 		}
 		
@@ -376,15 +379,22 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 		
 		/* Get record type */
 		Type.RecordType types = record.getType().getRecordType();
+		
+		/* Make sure record is valid */
+		if (types == null) {
+			error("Invalid record", node.getPosition());
+			return node;
+		}
+		
+		/* Set the type of the record and set the record of the node */
 		record.setType(types);
 		node.setRecord(record);
 		
-		/* Create reference type to node's type */
+		/* Number of fields in record */
 		int fieldCount = 0;
 		
 		/* Check field exists in record field */
 		for (Field t : types.getFieldList()) {
-			// TODO fix nullpointerexception
 			String recordField = t.getId();
 			if (node.getField().equals(recordField)) {
 				fieldCount++;
@@ -435,6 +445,11 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 		
 		/* Get the type of pointer */
 		Type.PointerType lvalType = lval.getType().getPointerType();
+		
+		if (lvalType == null) {
+			error("Value is undefined", node.getPosition());
+			return node;
+		}
 		
 		/* Create a reference type for an LValue */
 		Type.ReferenceType refType = new Type.ReferenceType(lvalType.getBaseType());

@@ -407,11 +407,25 @@ public class CodeGenerator
 	
 	public Code visitPointerConstructorNode(PointerConstructorNode node) {
 		Code code = new Code();
+		
+		/* Find out how much space to allocate */
+		int space = node.getType().getPointerType().getBaseType().getSpace();
+		
+		/* Top of stack expects size to allocate for heap */
+		code.genLoadConstant(space);
+		
+		/* Allocate space and replace top of stack with memory address of newly created object */
+		code.generateOp(Operation.ALLOC_HEAP);
+		
 		return code;
 	}
 	
 	public Code visitPointerNode(PointerNode node) {
 		Code code = new Code();
+		Code value = node.getValue().genCode( this );
+		
+		code.append(value);
+		code.generateOp( Operation.TO_LOCAL );
 		return code;
 	}
 
