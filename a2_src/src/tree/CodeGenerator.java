@@ -377,6 +377,7 @@ public class CodeGenerator
 		return code;
     }
     
+    /** Generate code to assign fields to a record */
 	public Code visitRecordFieldsNode(RecordFieldsNode node) {
 		Code code = new Code();
 		
@@ -387,7 +388,7 @@ public class CodeGenerator
 		return code;
 	}
 	
-    /* Record access with PERIOD (e.g. r.x) */
+    /** Generate code to access a record with PERIOD (e.g. r.x) */
 	public Code visitRecordEntryNode(RecordEntryNode node) {
 		/* Get record */
 		Type.RecordType recordType = node.getRecord().getType().getRecordType();
@@ -405,6 +406,7 @@ public class CodeGenerator
 		return code;
 	}
 	
+	/** Generate code construct a pointer. */
 	public Code visitPointerConstructorNode(PointerConstructorNode node) {
 		Code code = new Code();
 		
@@ -420,20 +422,49 @@ public class CodeGenerator
 		return code;
 	}
 	
+	/** Generate code for a pointer node.
+	 * 
+	 * 	Dereference the pointer, check the value against the NULL_ADDR
+	 * 	and return either the value or a STOP operation indicating a
+	 * 	null pointer dereference.
+	 * 
+	 * 		STACK:
+	 * 			[CODE FOR VALUE]
+	 * 			[CODE FOR ERROR]
+	 * 			[EQUALS]
+	 * 			[JUMP IF FALSE]
+	 * 			[ERROR]
+	 * 			[VALUE]
+	 */
 	public Code visitPointerNode(PointerNode node) {
 		Code code = new Code();
+		Code error = new Code();
+		
+		/* Create error code */
+		error.genLoadConstant(2);
+		error.generateOp(Operation.STOP);
+		
+		/* Resolve the LValue */
 		Code value = node.getValue().genCode( this );
-		
-		
+		value.generateOp(Operation.LOAD_FRAME);
 		code.append(value);
-		code.generateOp( Operation.LOAD_FRAME );
-		code.generateOp( Operation.TO_LOCAL );
+		
+		/* Compare LValue with NULL_ADDR */
+		code.genLoadConstant(StackMachine.NULL_ADDR);
+		code.generateOp(Operation.EQUAL);
+		
+		/* Jump over error code if false */
+		code.genJumpIfFalse(error.size());
+		code.append(error);
+		
+		/* Pointer dereference to get value */
+		code.append(value);
+		code.generateOp(Operation.TO_LOCAL);
+		
 		return code;
 	}
 
     private void fatal( String message, Position pos ) {
         errors.errorMessage( message, Severity.FATAL, pos);
     }
-
-
 }
