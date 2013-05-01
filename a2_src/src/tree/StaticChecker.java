@@ -451,8 +451,10 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
 			return node;
 		}
 		
+		Type baseType = lvalType.getBaseType();
+		
 		/* Create a reference type for an LValue */
-		Type.ReferenceType refType = new Type.ReferenceType(lvalType.getBaseType());
+		Type.ReferenceType refType = new Type.ReferenceType(baseType);
 		
 		/* Set node type to new refType*/
 		node.setType(refType);

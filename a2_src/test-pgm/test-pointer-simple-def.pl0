@@ -1,11 +1,19 @@
 // valid program
 type
-  T1 = ^int;
+  T1 = record
+	  		x: int;
+	  		y: int;
+	  		z: int;
+	  		q: int;
+	  		p: int;
+	  		r: int
+	  	end;
+  RP = ^T1;
 var
-  x: T1;
+  r: T1;
+  p: RP;
 begin
-  x := new T1;
-  x^ := 80085;
-  write x^
+  p := new RP;
+  
   
 end

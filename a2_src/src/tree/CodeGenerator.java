@@ -424,7 +424,9 @@ public class CodeGenerator
 		Code code = new Code();
 		Code value = node.getValue().genCode( this );
 		
+		
 		code.append(value);
+		code.generateOp( Operation.LOAD_FRAME );
 		code.generateOp( Operation.TO_LOCAL );
 		return code;
 	}
