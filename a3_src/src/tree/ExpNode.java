@@ -449,33 +449,55 @@ public abstract class ExpNode {
     }
     
     public static class FormalParamNode extends ExpNode {
-    	public FormalParamNode(Position pos) {
+    	String id;
+    	Type type;
+    	
+    	public FormalParamNode(Position pos, String id, Type type) {
     		super(pos);
-    		// TODO
+    		this.id = id;
+    		this.type = type;
+    	}
+    	
+    	public String getIdentifier() {
+    		return this.id;
+    	}
+    	
+    	public Type getType() {
+    		return this.type;
     	}
 
 		@Override
 		public ExpNode transform(ExpTransform<ExpNode> visitor) {
-			// TODO Auto-generated method stub
+			// Nothing to do
 			return null;
 		}
 
 		@Override
 		public Code genCode(ExpTransform<Code> visitor) {
-			// TODO Auto-generated method stub
+			// Nothing to do
 			return null;
 		}
 
 		@Override
 		public void accept(ExpVisitor visitor) {
-			// TODO Auto-generated method stub
-			
+			// Nothing to do
 		}
     }
     
     public static class FormalParamListNode extends ExpNode {
+    	List<FormalParamNode> formalParams;
+    	
     	public FormalParamListNode(Position pos) {
     		super(pos);
+    		formalParams = new ArrayList<ExpNode.FormalParamNode>();
+    	}
+    	
+    	public void addFormalParam(ExpNode.FormalParamNode p) {
+    		formalParams.add(p);
+    	}
+    	
+    	public List<ExpNode.FormalParamNode> getFormalParams() {
+    		return formalParams;
     	}
 
 		@Override
@@ -498,8 +520,19 @@ public abstract class ExpNode {
     }
     
     public static class ActualParamListNode extends ExpNode {
+    	List<ExpNode.ActualParamNode> actualParams;
+    	
     	public ActualParamListNode(Position pos) {
     		super(pos);
+    		actualParams = new ArrayList<ExpNode.ActualParamNode>();
+    	}
+    	
+    	public void addActualParam(ExpNode.ActualParamNode p) {
+    		actualParams.add(p);
+    	}
+    	
+    	public List<ExpNode.ActualParamNode> getActualParams() {
+    		return actualParams;
     	}
 
 		@Override
@@ -522,8 +555,15 @@ public abstract class ExpNode {
     }
     
     public static class ActualParamNode extends ExpNode {
-    	public ActualParamNode(Position pos) {
+    	ExpNode condition;
+    	
+    	public ActualParamNode(Position pos, ExpNode condition) {
     		super(pos);
+    		this.condition = condition;
+    	}
+    	
+    	public ExpNode getCondition() {
+    		return this.condition;
     	}
 
 		@Override

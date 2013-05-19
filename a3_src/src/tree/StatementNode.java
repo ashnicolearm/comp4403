@@ -137,20 +137,18 @@ public abstract class StatementNode {
     /** Tree node representing a "call" statement. */
     public static class CallNode extends StatementNode {
         private String id;
-        // TODO private ExpNode.ActualParamListNode;
+        private ExpNode.ActualParamListNode actualParams;
         private SymEntry.ProcedureEntry procEntry;
-
-        public CallNode( Position pos, String id ) {
+        
+        public CallNode( Position pos, String id, ExpNode.ActualParamListNode actualParams) {
             super( pos );
             this.id = id;
+            this.actualParams = actualParams;
         }
         
-        /* TODO 
-        public CallNode( Position pos, String id, ExpNode.ActualParamListNode ) {
-            super( pos );
-            this.id = id;
+        public ExpNode.ActualParamListNode getActualParams() {
+        	return this.actualParams;
         }
-        */
        
         @Override
         public void accept( StatementVisitor visitor ) {

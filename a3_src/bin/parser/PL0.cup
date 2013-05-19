@@ -429,22 +429,24 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
     
 FormalParam ::= KW_REF IDENTIFIER:id COLON TypeIdentifier:type
 		{:
-			// TODO	
+			RESULT = new ExpNode.FormalParamNode(new Position(idleft), id, type);
 		:}
 	|  IDENTIFIER:id COLON TypeIdentifier:type
 		{:
-			// TODO	
+			RESULT = new ExpNode.FormalParamNode(new Position(idleft), id, type);
 		:}
 	;
 
 /* To allow for the addition of procedure parameters. */
 FormalParamList ::= FormalParam:p
         {:
-        	// TODO
+        	RESULT = new ExpNode.FormalParamListNode(new Position(pleft));
+        	RESULT.addFormalParam(p)
         :}
 	|  FormalParamList:pl COMMA FormalParam:p
 		{:
-			// TODO	
+			pl.addFormalParam(p)
+			RESULT = pl;
 		:}
     ;
 
@@ -495,12 +497,14 @@ Statement ::= KW_WHILE Condition:c KW_DO Statement:s
     |  KW_CALL IDENTIFIER:id 
             LPAREN ActualParamList:pl RPAREN
         {: 
-            // TODO RESULT = new StatementNode.CallNode( new Position(idleft), id, pl );
+            RESULT = new StatementNode.CallNode( new Position(idleft), id, pl );
         :}
     |  KW_CALL IDENTIFIER:id 
             LPAREN RPAREN
         {: 
-            RESULT = new StatementNode.CallNode( new Position(idleft), id );
+        	ExpNode.ActualParamListNode emptyParamList = 
+        		new ExpNode.ActualParamListNode(new Position(idleft));
+            RESULT = new StatementNode.CallNode( new Position(idleft), id, emptyParamList );
         :}
     |  error:p 
         {: 
@@ -510,17 +514,19 @@ Statement ::= KW_WHILE Condition:c KW_DO Statement:s
 
 ActualParam ::= Condition:c
 		{:
-			// TODO	
+			RESULT = new ExpNode.ActualParamNode(new Position(cleft), c);
 		:}
 	;
 
 ActualParamList ::= ActualParam:p
 		{:
-			// TODO	
+        	RESULT = new ExpNode.ActualParamListNode(new Position(pleft));
+        	RESULT.addActualParam(p)
 		:}
 	|  ActualParamList:pl COMMA ActualParam:p
 		{:
-			// TODO	
+			pl.addActualParam(p);
+			RESULT = pl;
 		:} 
     ;
 
