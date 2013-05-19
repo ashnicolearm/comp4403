@@ -1,0 +1,11 @@
+// Two names for same record type
+type
+    RT = record
+          x: int;
+          x: int
+         end;
+var 
+    r1: RT;
+begin
+  r1 := RT{ 1, 2 }
+end

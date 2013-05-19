@@ -1,0 +1,12 @@
+// valid program
+type
+  T1 = ^int;
+var
+  x: T1;
+begin
+  x := new T1;
+  x^ := 80085;
+  x := nil;
+  write x^
+  
+end

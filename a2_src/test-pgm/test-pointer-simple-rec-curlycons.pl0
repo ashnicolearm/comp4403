@@ -1,0 +1,15 @@
+// Two names for same record type
+type
+    RT = record
+          x: int;
+          y: int
+         end;
+    P = ^RT;
+var 
+    r1: RT;
+    p: P;
+begin
+  p := new P;
+  p := nil;
+  write p^.x
+end

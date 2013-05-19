@@ -1,0 +1,15 @@
+type
+    RT = record
+          x: int
+        end;
+    RT2 = record
+    	  r: RT
+    	end;
+var 
+    r: RT;
+    t: RT2;
+begin
+	t.r.x := 80085;
+	write t.r.x
+end
+
