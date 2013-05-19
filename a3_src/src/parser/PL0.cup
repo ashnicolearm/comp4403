@@ -166,10 +166,14 @@ non terminal                  VarDeclSeq, VarDecl;
 non terminal Type             TypeIdentifier; 
 non terminal DeclNode.ProcedureNode ProcedureDef;
 non terminal SymEntry.ProcedureEntry ProcedureHead;
-non terminal 
+non terminal ExpNode.FormalParamListNode
                               FormalParamList;
-non terminal 
+non terminal ExpNode.ActualParamListNode 
                               ActualParamList;
+non terminal ExpNode.FormalParamNode
+							  FormalParam;
+non terminal ExpNode.ActualParamNode
+							  ActualParam;
 non terminal StatementNode.ListNode StatementList;
 non terminal StatementNode 
                               Statement,
@@ -396,6 +400,25 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
             procEntry.setLocalScope( symtab.newScope() );
             RESULT = procEntry;
         :}
+    |  KW_PROCEDURE IDENTIFIER:id LPAREN RPAREN
+    	{:
+    		// TODO	
+            SymEntry.ProcedureEntry procEntry;
+            /* Add an entry for the procedure to the current scope */
+            Position pos = new Position(idleft);
+            procEntry = symtab.addProcedure( id, pos );
+            if( procEntry == null ) {
+                error( id + " already declared", pos );
+                /* Create a dummy symbol table entry.
+                 * Note that this entry isn't in symtab. */
+                procEntry = new SymEntry.ProcedureEntry( id, 
+                    pos, symtab.getCurrentScope() );
+            }
+            /* Create a new scope for the symbols local to
+             * the procedure. */
+            procEntry.setLocalScope( symtab.newScope() );
+            RESULT = procEntry;
+    	:}
     |  KW_PROCEDURE IDENTIFIER:id error
         {: 
             RESULT = new SymEntry.ProcedureEntry( id, new Position( idleft ),
@@ -403,11 +426,26 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
             RESULT.setLocalScope( symtab.newScope() );
         :}
     ;
+    
+FormalParam ::= KW_REF IDENTIFIER:id COLON TypeIdentifier:type
+		{:
+			// TODO	
+		:}
+	|  IDENTIFIER:id COLON TypeIdentifier:type
+		{:
+			// TODO	
+		:}
+	;
 
 /* To allow for the addition of procedure parameters. */
-FormalParamList ::= /* empty */
+FormalParamList ::= FormalParam:p
         {:
+        	// TODO
         :}
+	|  FormalParamList:pl COMMA FormalParam:p
+		{:
+			// TODO	
+		:}
     ;
 
 CompoundStatement ::= KW_BEGIN StatementList:sl KW_END
@@ -457,6 +495,11 @@ Statement ::= KW_WHILE Condition:c KW_DO Statement:s
     |  KW_CALL IDENTIFIER:id 
             LPAREN ActualParamList:pl RPAREN
         {: 
+            // TODO RESULT = new StatementNode.CallNode( new Position(idleft), id, pl );
+        :}
+    |  KW_CALL IDENTIFIER:id 
+            LPAREN RPAREN
+        {: 
             RESULT = new StatementNode.CallNode( new Position(idleft), id );
         :}
     |  error:p 
@@ -465,7 +508,20 @@ Statement ::= KW_WHILE Condition:c KW_DO Statement:s
         :}
     ;
 
-ActualParamList ::= /* empty */
+ActualParam ::= Condition:c
+		{:
+			// TODO	
+		:}
+	;
+
+ActualParamList ::= ActualParam:p
+		{:
+			// TODO	
+		:}
+	|  ActualParamList:pl COMMA ActualParam:p
+		{:
+			// TODO	
+		:} 
     ;
 
 LValue ::= IDENTIFIER:id

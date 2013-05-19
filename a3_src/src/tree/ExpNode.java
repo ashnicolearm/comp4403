@@ -447,5 +447,101 @@ public abstract class ExpNode {
             return "WidenSubrange(" + exp + ":" + getType() + ")";
         }
     }
+    
+    public static class FormalParamNode extends ExpNode {
+    	public FormalParamNode(Position pos) {
+    		super(pos);
+    		// TODO
+    	}
 
+		@Override
+		public ExpNode transform(ExpTransform<ExpNode> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Code genCode(ExpTransform<Code> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void accept(ExpVisitor visitor) {
+			// TODO Auto-generated method stub
+			
+		}
+    }
+    
+    public static class FormalParamListNode extends ExpNode {
+    	public FormalParamListNode(Position pos) {
+    		super(pos);
+    	}
+
+		@Override
+		public ExpNode transform(ExpTransform<ExpNode> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Code genCode(ExpTransform<Code> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void accept(ExpVisitor visitor) {
+			// TODO Auto-generated method stub
+			
+		}
+    }
+    
+    public static class ActualParamListNode extends ExpNode {
+    	public ActualParamListNode(Position pos) {
+    		super(pos);
+    	}
+
+		@Override
+		public ExpNode transform(ExpTransform<ExpNode> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Code genCode(ExpTransform<Code> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void accept(ExpVisitor visitor) {
+			// TODO Auto-generated method stub
+			
+		}
+    }
+    
+    public static class ActualParamNode extends ExpNode {
+    	public ActualParamNode(Position pos) {
+    		super(pos);
+    	}
+
+		@Override
+		public ExpNode transform(ExpTransform<ExpNode> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Code genCode(ExpTransform<Code> visitor) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void accept(ExpVisitor visitor) {
+			// TODO Auto-generated method stub
+			
+		}
+    }
 }
