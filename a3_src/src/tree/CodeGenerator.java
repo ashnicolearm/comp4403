@@ -156,8 +156,23 @@ public class CodeGenerator
         Code code = new Code();
         // Call the procedure
         SymEntry.ProcedureEntry proc = node.getEntry();
+        List<ExpNode.ActualParamNode> actualParams = node.getActualParams().getActualParams();
+        
+        for (int i = actualParams.size() - 1; i >= 0; i--) {
+        	code.append(actualParams.get(i).genCode(this));
+        	
+        	if (proc.getType().getParams().get(i) instanceof SymEntry.RefParamEntry) {
+        		code.generateOp(Operation.TO_GLOBAL);
+        	}
+        }
+        
         /* Generate the call instruction */
         code.genCall( staticLevel - proc.getLevel(), proc );
+        
+        /* Clean up stack */
+        int paramSpace = proc.getLocalScope().getParameterSpace();
+        code.genDeallocStack(paramSpace);
+        
         return code;
     }
     /** Generate code for a statement list */
@@ -370,9 +385,27 @@ public class CodeGenerator
         // Widening doesn't require anything extra
         return node.getExp().genCode( this );
     }
+    
+	public Code visitActualParamListNode(ExpNode.ActualParamListNode node) {
+		return new Code();
+	}
+
+	public Code visitActualParamNode(ExpNode.ActualParamNode node) {
+		/* Get code for the value param -> offset */
+		return node.getCondition().genCode(this);
+	}
+	
+	public Code visitRefParamNode(ExpNode.RefParamNode node) {
+		Code code = new Code();
+		code.genLoadConstant(node.getVariable().getOffset());
+		code.generateOp(Operation.LOAD_FRAME);
+		code.generateOp(Operation.TO_LOCAL);
+		return code;
+	}
 
     private void fatal( String message, Position pos ) {
         errors.errorMessage( message, Severity.FATAL, pos);
     }
+
 
 }

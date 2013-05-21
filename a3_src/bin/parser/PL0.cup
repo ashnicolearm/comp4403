@@ -397,12 +397,39 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
             }
             /* Create a new scope for the symbols local to
              * the procedure. */
-            procEntry.setLocalScope( symtab.newScope() );
+            Scope scope = symtab.newScope();
+           	
+           	SymEntry.ParamEntry entry; 
+           	List<SymEntry.ParamEntry> procEntries = new ArrayList<SymEntry.ParamEntry>(); 
+           
+			for (ExpNode.FormalParamNode paramNode : pl.getFormalParams()) {
+				String paramId = paramNode.getId();
+				Position paramPos = paramNode.getPosition();
+				Type.ReferenceType paramType = 
+					new Type.ReferenceType(paramNode.getParamType().resolveType(paramPos));
+					
+				if (paramNode.isRef()) {
+					entry = new SymEntry.RefParamEntry(paramId, paramPos, scope, paramType);		
+				} else {
+					entry = new SymEntry.ParamEntry(paramId, paramPos, scope, paramType);		
+				} 
+				
+				int offset = scope.allocParameterSpace(paramType.getSpace());
+				entry.setOffset(offset);
+				
+				if (scope.addEntry(entry) == null) {
+					error("Duplicate parameter", paramPos);	
+				}	
+				
+				procEntries.add(entry);
+			}
+			
+			procEntry.getType().setParams(procEntries); 
+            procEntry.setLocalScope( scope );
             RESULT = procEntry;
         :}
     |  KW_PROCEDURE IDENTIFIER:id LPAREN RPAREN
     	{:
-    		// TODO	
             SymEntry.ProcedureEntry procEntry;
             /* Add an entry for the procedure to the current scope */
             Position pos = new Position(idleft);
@@ -429,11 +456,11 @@ ProcedureHead ::= KW_PROCEDURE IDENTIFIER:id
     
 FormalParam ::= KW_REF IDENTIFIER:id COLON TypeIdentifier:type
 		{:
-			RESULT = new ExpNode.FormalParamNode(new Position(idleft), id, type);
+			RESULT = new ExpNode.FormalParamNode(new Position(idleft), id, type, true);
 		:}
 	|  IDENTIFIER:id COLON TypeIdentifier:type
 		{:
-			RESULT = new ExpNode.FormalParamNode(new Position(idleft), id, type);
+			RESULT = new ExpNode.FormalParamNode(new Position(idleft), id, type, false);
 		:}
 	;
 
@@ -441,11 +468,11 @@ FormalParam ::= KW_REF IDENTIFIER:id COLON TypeIdentifier:type
 FormalParamList ::= FormalParam:p
         {:
         	RESULT = new ExpNode.FormalParamListNode(new Position(pleft));
-        	RESULT.addFormalParam(p)
+        	RESULT.addFormalParam(p);
         :}
 	|  FormalParamList:pl COMMA FormalParam:p
 		{:
-			pl.addFormalParam(p)
+			pl.addFormalParam(p);
 			RESULT = pl;
 		:}
     ;
@@ -521,7 +548,7 @@ ActualParam ::= Condition:c
 ActualParamList ::= ActualParam:p
 		{:
         	RESULT = new ExpNode.ActualParamListNode(new Position(pleft));
-        	RESULT.addActualParam(p)
+        	RESULT.addActualParam(p);
 		:}
 	|  ActualParamList:pl COMMA ActualParam:p
 		{:

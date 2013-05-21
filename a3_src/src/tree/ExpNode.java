@@ -450,20 +450,26 @@ public abstract class ExpNode {
     
     public static class FormalParamNode extends ExpNode {
     	String id;
-    	Type type;
+    	Type paramType;
+    	boolean isRef;
     	
-    	public FormalParamNode(Position pos, String id, Type type) {
+    	public FormalParamNode(Position pos, String id, Type type, boolean isRef) {
     		super(pos);
     		this.id = id;
-    		this.type = type;
+    		this.paramType = type;
+    		this.isRef = isRef;
     	}
     	
-    	public String getIdentifier() {
+    	public String getId() {
     		return this.id;
     	}
     	
-    	public Type getType() {
-    		return this.type;
+    	public Type getParamType() {
+    		return this.paramType;
+    	}
+    	
+    	public boolean isRef() {
+    		return this.isRef;
     	}
 
 		@Override
@@ -537,19 +543,18 @@ public abstract class ExpNode {
 
 		@Override
 		public ExpNode transform(ExpTransform<ExpNode> visitor) {
-			// TODO Auto-generated method stub
-			return null;
+            return visitor.visitActualParamListNode( this );
 		}
 
 		@Override
 		public Code genCode(ExpTransform<Code> visitor) {
-			// TODO Auto-generated method stub
+			// Nothing to do
 			return null;
 		}
 
 		@Override
 		public void accept(ExpVisitor visitor) {
-			// TODO Auto-generated method stub
+            visitor.visitActualParamListNode( this );
 			
 		}
     }
@@ -562,26 +567,62 @@ public abstract class ExpNode {
     		this.condition = condition;
     	}
     	
+    	public void setCondition(ExpNode c) {
+    		this.condition = c;
+    	}
+    	
     	public ExpNode getCondition() {
     		return this.condition;
     	}
 
 		@Override
 		public ExpNode transform(ExpTransform<ExpNode> visitor) {
-			// TODO Auto-generated method stub
-			return null;
+            return visitor.visitActualParamNode( this );
 		}
 
 		@Override
 		public Code genCode(ExpTransform<Code> visitor) {
-			// TODO Auto-generated method stub
-			return null;
+            return visitor.visitActualParamNode( this );
 		}
 
 		@Override
 		public void accept(ExpVisitor visitor) {
-			// TODO Auto-generated method stub
-			
+            visitor.visitActualParamNode( this );
 		}
+    }
+    
+    public static class RefParamNode extends ExpNode {
+        protected SymEntry.RefParamEntry variable;
+    
+        public RefParamNode( Position pos, SymEntry.RefParamEntry variable ) {
+            super( pos );
+            this.variable = variable;
+        }
+        public String getId() {
+            return variable.getIdent();
+        }
+        @Override
+        public Type getType() {
+            return variable.getType();
+        }
+        @Override
+        public ExpNode transform( ExpTransform<ExpNode> visitor ) {
+            return visitor.visitRefParamNode( this );
+        }
+        @Override
+        public Code genCode( ExpTransform<Code> visitor ) {
+            return visitor.visitRefParamNode( this );
+        }
+        @Override
+        public void accept( ExpVisitor visitor ) {
+            visitor.visitRefParamNode( this );
+        }
+        public SymEntry.RefParamEntry getVariable() {
+            return variable;
+        }
+        @Override
+        public String toString( ) {
+            return "RefParamNode(" + variable + ")";
+        }
     }
 }

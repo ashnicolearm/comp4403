@@ -146,6 +146,10 @@ public abstract class StatementNode {
             this.actualParams = actualParams;
         }
         
+        public void setActualParams(ExpNode.ActualParamListNode pl) {
+        	this.actualParams = pl;
+        }
+        
         public ExpNode.ActualParamListNode getActualParams() {
         	return this.actualParams;
         }

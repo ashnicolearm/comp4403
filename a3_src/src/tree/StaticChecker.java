@@ -121,6 +121,7 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     public void visitCallNode(StatementNode.CallNode node) {
         SymEntry.ProcedureEntry procEntry;
         Type.ProcedureType procType;
+        
         // Look up the symbol table entry for the procedure.
         SymEntry entry = symtab.lookup( node.getId() );
         if( entry instanceof SymEntry.ProcedureEntry ) {
@@ -130,6 +131,49 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
         } else {
             error( "Procedure identifier required", node.getPosition() );
             return;
+        }
+       
+        /* Make sure params are well-defined */
+        ExpNode params = node.getActualParams().transform(this);
+        ExpNode.ActualParamListNode actualParamsList;
+        
+        /* Safe cast to set actual params */
+        if (params instanceof ExpNode.ActualParamListNode) {
+        	actualParamsList = (ExpNode.ActualParamListNode) params;
+        	node.setActualParams(actualParamsList);
+        } else {
+        	error("Error in parameters", node.getPosition());
+        	return;
+        }
+        
+        /* Procedure (formal) parameters  */
+        List<SymEntry.ParamEntry> paramEntries = procType.getParams();
+        
+        /* Procedure (actual) parameters */
+        List<ExpNode.ActualParamNode> actualParams = actualParamsList.getActualParams();
+        
+        /* Check arguments match */
+        if (paramEntries.size() != actualParams.size()) {
+        	error("Invalid number of arguments", node.getPosition());
+        	return;
+        }
+        
+        /* Check types match */
+        for (int i = 0; i < paramEntries.size(); i++) {
+        	ExpNode.ActualParamNode aParamNode = actualParams.get(i);
+        	SymEntry.ParamEntry fParam = paramEntries.get(i);
+        	Type.ReferenceType fType = fParam.getType();
+        	
+        	if (fParam instanceof SymEntry.RefParamEntry) { // ref param
+        		Type aType = aParamNode.getCondition().getType();
+        		if (!aType.equals(fType)) {
+        			error("Invalid types, must be type " + fType, aParamNode.getPosition());
+        		}
+        	} else { // value param
+        		Type baseType = fType.getBaseType();
+        		ExpNode newCondition = Coercion.coerce(aParamNode.getCondition(), baseType);
+        		aParamNode.setCondition(newCondition);
+        	}
         }
     }
 
@@ -284,6 +328,10 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
                 (SymEntry.ConstantEntry)entry;
             newNode = new ExpNode.ConstNode( node.getPosition(), 
                     constEntry.getType(), constEntry.getValue() );
+        } else if ( entry instanceof SymEntry.RefParamEntry ) {
+        	SymEntry.RefParamEntry refEntry = (SymEntry.RefParamEntry) entry;
+        	newNode = new ExpNode.RefParamNode(node.getPosition(), refEntry);
+        	
         } else if( entry instanceof SymEntry.VarEntry ) {
             // Set up a new node which is a variable.
             SymEntry.VarEntry varEntry = (SymEntry.VarEntry)entry;
@@ -310,6 +358,29 @@ public class StaticChecker implements TreeVisitor, StatementVisitor,
     }
 
     public ExpNode visitWidenSubrangeNode(ExpNode.WidenSubrangeNode node) {
+        // Nothing to do.
+        return node;
+    }
+    
+	public ExpNode visitActualParamListNode(ExpNode.ActualParamListNode node) {
+		List<ExpNode.ActualParamNode> actualParams = node.getActualParams();
+		
+		/* Make sure each of the parameters are well-defined */
+		for (ExpNode.ActualParamNode p : actualParams) {
+			p.transform(this);
+		}
+		
+		return node;
+	}
+	
+	public ExpNode visitActualParamNode(ExpNode.ActualParamNode node) {
+		/* Transform the value (condition) to it's actual type and set it */
+		ExpNode condition = node.getCondition().transform(this);
+		node.setCondition(condition);
+		return node;
+	}
+	
+    public ExpNode visitRefParamNode(ExpNode.RefParamNode node) {
         // Nothing to do.
         return node;
     }
