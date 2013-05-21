@@ -1,0 +1,51 @@
+Compiling test-base9-proc.pl0
+Parsing complete
+Static semantic analysis complete
+Code generation complete
+No errors detected.
+Running ...
+2
+
+Runtime error: Divide by zero
+
+Stack pointer = 26
+     0   : 0
+     1   : 0
+     2   : 0
+     3   : 1
+     4   : 0
+     5   : 0
+     6   : 1020
+     7   : 0
+     8   : 4
+     9   : 1030
+     10  : 1
+     11  : 7
+     12  : 7
+     13  : 1058
+     14  : 1
+     15  : 0
+     16  : 11
+     17  : 1134
+     18  : 0
+     19  : 15
+     20  : 1030
+     21  : 0
+ FP: 22  : 18
+     23  : 18
+     24  : 1058
+     25  : 0
+PC=1097 in r 1069 : 1135 FP=22 SL=18 DL=18 RA=1058
+  z(3) = 0
+PC=1058 in p 1031 : 1069 FP=18 SL=0 DL=15 RA=1030
+  y(3) = 0
+PC=1030 in q 1025 : 1031 FP=15 SL=0 DL=11 RA=1134
+PC=1134 in r 1069 : 1135 FP=11 SL=7 DL=7 RA=1058
+  z(3) = 1
+PC=1058 in p 1031 : 1069 FP=7 SL=0 DL=4 RA=1030
+  y(3) = 1
+PC=1030 in q 1025 : 1031 FP=4 SL=0 DL=0 RA=1020
+PC=1020 in <main> 1003 : 1025 FP=0 SL=0 DL=0 RA=0
+  x(3) = 1
+
+Terminated

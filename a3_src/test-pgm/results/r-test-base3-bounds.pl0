@@ -1,0 +1,22 @@
+Compiling test-base3-bounds.pl0
+Parsing complete
+Static semantic analysis complete
+Code generation complete
+No errors detected.
+Running ...
+9
+2
+7
+Bounds check failed at 1049: 1 not in 2..7
+
+Stack pointer = 5
+ FP: 0   : 0
+     1   : 0
+     2   : 0
+     3   : 9
+     4   : 7
+PC=1050 in <main> 1003 : 1072 FP=0 SL=0 DL=0 RA=0
+  y(3) = 9
+  x(4) = 7
+
+Terminated

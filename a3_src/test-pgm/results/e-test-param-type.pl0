@@ -1,0 +1,8 @@
+Exception in thread "main" java.lang.NullPointerException
+	at tree.StaticChecker.visitStatementListNode(StaticChecker.java:138)
+	at tree.StatementNode$ListNode.accept(StatementNode.java:191)
+	at tree.StaticChecker.visitBlockNode(StaticChecker.java:64)
+	at tree.Tree$BlockNode.accept(Tree.java:56)
+	at tree.StaticChecker.visitProgramNode(StaticChecker.java:56)
+	at pl0.PL0_CUP.compile(PL0_CUP.java:157)
+	at pl0.PL0_CUP.main(PL0_CUP.java:98)

@@ -1,0 +1,34 @@
+Compiling test-base-exp-err.pl0
+     6     i = 42;    // duplicate declaration
+******     ^  Error: i already defined
+     7     S = 27;    // duplicate declaration
+******     ^  Error: S already defined
+Parsing complete
+     9   i := true;   // cannot assign boolean to int
+******        ^  Error: cannot coerce type BOOLEAN to INT
+    10   b := 8;      // cannot assign int to boolean
+******        ^  Error: cannot coerce type INT to BOOLEAN
+    11   i := b;      // cannot assign boolean to int
+******        ^  Error: cannot coerce type ref(BOOLEAN) to INT
+    12   i := i + b;  // cannot add int and boolean
+******          ^  Error: Type of arguments (ref(INT),ref(BOOLEAN)) do not match (((INT*INT)->INT))
+    13   b := i + b;  // cannot add int and boolean
+******          ^  Error: Type of arguments (ref(INT),ref(BOOLEAN)) do not match (((INT*INT)->INT))
+    17   b := j;      // cannot assign int subrange to boolean
+******        ^  Error: cannot coerce type ref(subrange(INT,2,8)) to BOOLEAN
+    18   j := b;      // cannot assign boolean to int subrange
+******        ^  Error: cannot coerce type ref(BOOLEAN) to subrange(INT,2,8)
+    19   j := i = j;  // cannot assign boolean to int
+******          ^  Error: cannot coerce type BOOLEAN to subrange(INT,2,8)
+    20   b := x * y;  // x and y not declared
+******        ^  Error: Constant or variable identifier required
+******          ^  Error: Type of arguments (ERROR_TYPE,ERROR_TYPE) do not match (((INT*INT)->INT))
+******            ^  Error: Constant or variable identifier required
+    21   i := i + (j * x);  // x not declared
+******          ^  Error: Type of arguments (ref(INT),ERROR_TYPE) do not match (((INT*INT)->INT))
+******               ^  Error: Type of arguments (ref(subrange(INT,2,8)),ERROR_TYPE) do not match (((INT*INT)->INT))
+******                 ^  Error: Constant or variable identifier required
+    22   write undefined // undefined not declared
+******         ^  Error: Constant or variable identifier required
+Static semantic analysis complete
+17 errors detected.

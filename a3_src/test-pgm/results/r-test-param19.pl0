@@ -1,0 +1,4 @@
+Compiling test-param19.pl0
+    11   call p( ,5, true );  // extra comma
+******           ^  Error: PL0 syntax error
+Parsing complete

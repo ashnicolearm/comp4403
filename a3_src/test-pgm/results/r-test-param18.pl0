@@ -1,0 +1,4 @@
+Compiling test-param18.pl0
+     5 procedure p( a: int, b: boolean, c: int, )  = // invalid: extra comma
+******                                          ^  Error: PL0 syntax error
+Parsing complete
